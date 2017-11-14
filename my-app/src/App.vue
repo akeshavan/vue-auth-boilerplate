@@ -49,7 +49,9 @@
     </b-navbar>
 
     <!-- The content is in the router view -->
-    <router-view :isAuthenticated="isAuthenticated" :userInfo="userInfo"/>
+    <div class="router">
+      <router-view :isAuthenticated="isAuthenticated" :userInfo="userInfo"/>
+    </div>
 
   </div>
 </template>
@@ -134,5 +136,9 @@ export default {
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
+  }
+
+  .router {
+    padding-top: 40px;
   }
 </style>
