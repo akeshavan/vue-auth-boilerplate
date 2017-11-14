@@ -1,48 +1,81 @@
-### How I made this boilerplate
+This app features
 
-* install npm
-* install vue-cli
+* [Vue.js]() - a frontend framework
+* [Webpack]() - a tool to bundle your files
+* [vue-router]() - client-side routing
+* [Axios]() - a library to call your REST api
+* [vue-bootstrap]() which adds [Twitter bootstrap v4]() styling to the site
+* Authentication with [GitHub]()
 
-`npm install --global vue-cli`
+### Getting started
 
-* get the webpack boilerplat
+First make sure you have [`npm` and `node.js`](https://nodejs.org/en/download/) installed
 
-`vue init webpack my-app`
+Next, clone the boilerplate from GitHub:
 
-I got:
-
-```
-? Project name my-app
-? Project description a boilerplate vue app
-? Author akeshavan <keshavan@berkeley.edu>
-? Vue build standalone
-? Install vue-router? Yes
-? Use ESLint to lint your code? Yes
-? Pick an ESLint preset Airbnb
-? Setup unit tests Yes
-? Pick a test runner karma
-? Setup e2e tests with Nightwatch? Yes
-
-   vue-cli · Generated "my-app".
-
-   To get started:
-
-     cd my-app
-     npm install
-     npm run dev
-
-   Documentation can be found at https://vuejs-templates.github.io/webpack
+```bash
+git clone https://github.com/akeshavan/vue-auth-boilerplate
 ```
 
-I'm also going to install twitter bootstrap (style) and axios (for REST calls)
+Then install all `npm` packages:
 
-```cd my-app
-npm install --save bootstrap-vue bootstrap@4.0.0-beta.2
-npm install --save axios path.join
+```bash
+cd vue-auth-boilerplate/my-app
+npm install
 ```
 
-Now open App.vue. copy/paste the navbar code from: the [docs](https://bootstrap-vue.js.org/docs/components/navbar)
+To run the app, do:
 
+```bash
+npm run dev
 ```
 
+And navigate to [http://localhost:8080](http://localhost:8080) (or wherever npm starts the server). As you make changes to your app, the browser will reload so you don't have to keep refreshing the page.
+
+### Setting up OAuth:
+
+You need to set up oauth to your own server in order for this boilerplate to work.
+
+#### Register a new application on GitHub
+
+On your GitHub account, go to Settings > Developer Settings > OAuth Apps > New OAuth App.
+Fill out the form, making sure that your **Authorization callback URL** is `http://localhost:8080`.
+Take note of the `client_id` and `client_secret` of your app.
+
+#### Server side
+
+Your server endpoint should be something like `http://your_rest_api.com/authenticate/code`, where code is a string from GitHub that's procided by the client.
+
+The server should return a JSON that looks like:
+
+```js
+{"token": "secret_token_from_the_server"}
 ```
+
+This token will be used for all future calls to your server. In this example, our server is the GitHub api.
+
+If you don't have a server, then set one up with [prose/gatekeeper and heroku](https://github.com/prose/gatekeeper#heroku-button)
+
+Your server needs to have the `client_secret` handy.
+
+#### Client side
+
+In the `src/config.js` file of this boilerplate app, edit it so that your `client_id` and authentication endpoint `authUrl` are correct.
+
+```js
+export default {
+authUrl: 'https://your_authentication_endpoint/',
+clientId: 'your github client id',
+redirectUri: 'http://localhost:8080', //eventually this will become your production url
+};
+```
+
+### Production
+
+To build the app for production, do:
+
+```bash
+npm run build
+```
+
+Everything in the `dist/` folder is your production app.
