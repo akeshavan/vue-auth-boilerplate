@@ -13,36 +13,34 @@
   </div>
 </template>
 <script>
-  import axios from 'axios'
+  import axios from 'axios';
 
   export default {
     name: 'Coins',
 
     data() {
       return {
-        coin: {}
-      }
+        coin: {},
+      };
     },
 
     created() {
-      this.fetchData()
+      this.fetchData();
     },
 
     watch: {
-      '$route': 'fetchData'
+      $route: 'fetchData',
     },
 
     methods: {
       fetchData() {
-        axios.get('https://api.coinmarketcap.com/v1/ticker/'+this.$route.params.id+'/')
+        axios.get(`https://api.coinmarketcap.com/v1/ticker/${this.$route.params.id}/`)
         .then((resp) => {
-          this.coin = resp.data[0]
-          console.log(resp)
+          this.coin = resp.data[0];
         })
-        .catch((err) => {
-          console.log(err)
-        })
-      }
-    }
-  }
+        .catch(() => {
+        });
+      },
+    },
+  };
 </script>

@@ -63,7 +63,6 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import pathJoin from 'path.join';
 import axios from 'axios';
-import config from './config';
 import auth from './lib/auth';
 
 
@@ -77,19 +76,19 @@ export default {
       userInfo: {
         username: null,
       },
-    }
+    };
   },
   methods: {
 
     authenticate() {
       const self = this;
-      auth.login(()=>{
-        self.getUserInfo()
-      })
+      auth.login(() => {
+        self.getUserInfo();
+      });
     },
 
     getUserInfo() {
-      const token = auth.getToken()
+      const token = auth.getToken();
       const self = this;
 
       // TODO: CHANGE THIS TO YOUR SERVER
@@ -99,28 +98,27 @@ export default {
 
       axios.get(pathJoin('https://api.github.com', 'user'), {
         headers: {
-          Authorization: 'token ' + token,
-        }
+          Authorization: `token ${token}`,
+        },
       }).then((resp) => {
         self.isAuthenticated = true;
 
         // TODO: do stuff here, like setting user info variables
         self.userInfo.username = resp.data.login;
         self.userInfo.avatar = resp.data.avatar_url;
-
-      }).catch((e) => {
-        self.logout()
-      })
+      }).catch(() => {
+        self.logout();
+      });
     },
 
     logout() {
       this.isAuthenticated = false;
-      auth.logout()
+      auth.logout();
     },
   },
 
   created() {
-    this.getUserInfo()
+    this.getUserInfo();
   },
 };
 </script>

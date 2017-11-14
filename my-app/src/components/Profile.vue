@@ -26,13 +26,13 @@
 
 <script>
 export default {
-  name: "profile",
+  name: 'profile',
   data() {
     return {
 
-    }
+    };
   },
   // the parent component feeds these vars to this component
-  props: ["isAuthenticated", "userInfo"]
-}
+  props: ['isAuthenticated', 'userInfo'],
+};
 </script>

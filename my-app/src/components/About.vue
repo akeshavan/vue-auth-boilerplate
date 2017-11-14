@@ -14,11 +14,11 @@
 
 <script>
 export default {
-  name: "about",
+  name: 'about',
   data() {
     return {
-      count: 1
-    }
+      count: 1,
+    };
   },
-}
+};
 </script>

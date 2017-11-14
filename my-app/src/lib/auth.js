@@ -8,8 +8,8 @@ window.store = store;
 // CREDITS: http://www.gethugames.in/2012/04/authentication-and-authorization-for-google-apis-in-javascript-popup-window-tutorial.html
 // credits: http://www.netlobo.com/url_query_string_javascript.html
 function gup(url, name, win, callback) {
-  const n = name.replace(/[[]/, '[').replace(/[]]/, ']');
-  const regexS = '[?&]' + n + '=([^&#]*)';
+  // const n = name.replace(/[[]/, '[').replace(/[]]/, ']');
+  const regexS = `[?&]${name}=([^&#]*)`;
   const regex = new RegExp(regexS);
   const results = regex.exec(url);
 
@@ -44,7 +44,7 @@ function getGithubCode(_url, REDIRECT, callback) {
         });
       }
     } catch (e) {
-      console.log(e)
+      // empty
     }
   }, 100);
 }
@@ -52,7 +52,7 @@ function getGithubCode(_url, REDIRECT, callback) {
 export default {
 
   login(callback) {
-    const url = 'https://github.com/login/oauth/authorize?client_id=' + config.clientId;
+    const url = `https://github.com/login/oauth/authorize?client_id=${config.clientId}`;
     getGithubCode(url, config.redirectUri, callback);
   },
 
