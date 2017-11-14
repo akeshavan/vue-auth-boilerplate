@@ -4,6 +4,10 @@
   -->
   <div>
     <h1>{{ coin.name }}</h1>
+
+    <p>This is a dynamic route. The URL tells us which coin we want to look up,
+      and the vue component gets the info for that coin</p>
+
     <p>Symbol: {{ coin.symbol }}</p>
     <p>Price (USD): {{ coin.price_usd }}</p>
   </div>
