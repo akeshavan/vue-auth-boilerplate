@@ -1,0 +1,48 @@
+### How I made this boilerplate
+
+* install npm
+* install vue-cli
+
+`npm install --global vue-cli`
+
+* get the webpack boilerplat
+
+`vue init webpack my-app`
+
+I got:
+
+```
+? Project name my-app
+? Project description a boilerplate vue app
+? Author akeshavan <keshavan@berkeley.edu>
+? Vue build standalone
+? Install vue-router? Yes
+? Use ESLint to lint your code? Yes
+? Pick an ESLint preset Airbnb
+? Setup unit tests Yes
+? Pick a test runner karma
+? Setup e2e tests with Nightwatch? Yes
+
+   vue-cli · Generated "my-app".
+
+   To get started:
+
+     cd my-app
+     npm install
+     npm run dev
+
+   Documentation can be found at https://vuejs-templates.github.io/webpack
+```
+
+I'm also going to install twitter bootstrap (style) and axios (for REST calls)
+
+```cd my-app
+npm install --save bootstrap-vue bootstrap@4.0.0-beta.2
+npm install --save axios path.join
+```
+
+Now open App.vue. copy/paste the navbar code from: the [docs](https://bootstrap-vue.js.org/docs/components/navbar)
+
+```
+
+```
