@@ -21,8 +21,10 @@
 
         <!--  Here are links to different routes  -->
         <b-navbar-nav>
-          <b-nav-item :to="'/'" exact>Home</b-nav-item>
-          <b-nav-item :to="'/about'" >About</b-nav-item>
+          <b-nav-item to="/" exact>Home</b-nav-item>
+          <b-nav-item to="/about">About</b-nav-item>
+          <b-nav-item to="/coins/bitcoin">Bitcoin</b-nav-item>
+          <b-nav-item to="/coins/ethereum">Ethereum</b-nav-item>
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->
@@ -32,7 +34,7 @@
             <template slot="button-content">
               <em>{{userInfo.username}}</em>
             </template>
-            <b-dropdown-item href="#">Profile</b-dropdown-item>
+            <b-dropdown-item to="/profile">Profile</b-dropdown-item>
             <b-dropdown-item @click="logout">Signout</b-dropdown-item>
           </b-nav-item-dropdown>
 
@@ -47,7 +49,7 @@
     </b-navbar>
 
     <!-- The content is in the router view -->
-    <router-view/>
+    <router-view :isAuthenticated="isAuthenticated" :userInfo="userInfo"/>
 
   </div>
 </template>

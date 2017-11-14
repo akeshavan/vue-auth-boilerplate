@@ -8,8 +8,8 @@ window.store = store;
 // CREDITS: http://www.gethugames.in/2012/04/authentication-and-authorization-for-google-apis-in-javascript-popup-window-tutorial.html
 // credits: http://www.netlobo.com/url_query_string_javascript.html
 function gup(url, name, win, callback) {
-  const n = name.replace(/[[]/,"\[").replace(/[]]/,"\]");
-  const regexS = '[\?&]' + n + '=([^&#]*)';
+  const n = name.replace(/[[]/, '[').replace(/[]]/, ']');
+  const regexS = '[?&]' + n + '=([^&#]*)';
   const regex = new RegExp(regexS);
   const results = regex.exec(url);
 
@@ -22,7 +22,6 @@ function gup(url, name, win, callback) {
 
 function authenticateAgainstServer(code, callback) {
   const url = joinPath(config.authUrl, code);
-  console.log(url);
   axios.get(url).then((resp) => {
     store.set('token', resp.data.token);
     callback(resp.data.token, null);
