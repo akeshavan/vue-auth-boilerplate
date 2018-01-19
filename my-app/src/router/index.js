@@ -4,6 +4,7 @@ import About from '@/components/About';
 import Home from '@/components/Home';
 import Profile from '@/components/Profile';
 import Coins from '@/components/Coins';
+import Contact from '@/components/Contact';
 
 Vue.use(Router);
 
@@ -25,9 +26,14 @@ export default new Router({
       component: Profile,
     },
     {
-      path: '/coins/:id',
+      path: '/coins/:pmid',
       name: 'Coins',
       component: Coins,
     },
+    {
+      path: '/contact',
+      name: 'Contact',
+      component: Contact,
+    }
   ],
 });

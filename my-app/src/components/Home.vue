@@ -2,7 +2,14 @@
   <div class="home container">
     <h1>{{msg}}</h1>
 
-    Welcome! This app has <strong>vue-router</strong>, which means that when you
+    Welcome! What are you looking for? <br>
+    <input type="text" v-model="pubmedquery">
+    <router-link v-bind:to="'/coins/'+pubmedquery" >Search!</router-link>
+
+    </input>
+
+
+    <br><br><br><strong>vue-router</strong>, which means that when you
     navigate to a new page, the site is not reloaded. Instead, the data model
     is updated and the view changes. <strong>Authentication</strong> is through GitHub (click
     the login button at the top right to log in). The "bitcoin" and "ethereum"
@@ -10,7 +17,7 @@
     how to render (i.e. which coin price to render).
 
     Check out the Profile page after logging in. It only renders correctly if the user is logged in.
-    
+
 
   </div>
 

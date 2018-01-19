@@ -5,6 +5,9 @@
     This is a new route on the client.
 
     Here is a vue variable: {{count}}
+    <button v-on:click="increase">
+      click this to increase count
+    </button>
   </div>
 
 </template>
@@ -20,5 +23,10 @@ export default {
       count: 1,
     };
   },
+  methods: {
+    increase: function(){
+      this.count += 1
+    }
+  }
 };
 </script>
