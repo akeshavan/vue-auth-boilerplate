@@ -41,7 +41,7 @@
         .then((resp) => {
           // this.pubmedid = resp.data[0];
           console.log(this.convertxml(resp.data))
-          this.articleInfo = this.convertxml(resp.data)
+          this.articleInfo = JSON.parse(this.convertxml(resp.data));
         })
         .catch(() => {
         });
