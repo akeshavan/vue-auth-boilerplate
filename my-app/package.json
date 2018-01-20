@@ -17,11 +17,13 @@
     "axios": "^0.17.1",
     "bootstrap": "^4.0.0-beta.2",
     "bootstrap-vue": "^1.0.2",
+    "firebase": "^4.9.0",
     "path.join": "^1.0.0",
     "store": "^2.0.12",
-    "vue": "^2.5.2",
+    "vue": "^2.5.13",
     "vue-axios": "^2.0.2",
-    "vue-router": "^3.0.1"
+    "vue-router": "^3.0.1",
+    "vuefire": "^1.4.5"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

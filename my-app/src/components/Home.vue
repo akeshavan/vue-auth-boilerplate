@@ -1,16 +1,14 @@
 <template>
   <div class="home container">
-    <h1>{{msg}}</h1>
-
-    Welcome! This app has <strong>vue-router</strong>, which means that when you
-    navigate to a new page, the site is not reloaded. Instead, the data model
-    is updated and the view changes. <strong>Authentication</strong> is through GitHub (click
-    the login button at the top right to log in). The "bitcoin" and "ethereum"
-    links are <strong>dynamic routes</strong>. When you navigate there, the URL has a variable that tells the page
-    how to render (i.e. which coin price to render).
-
-    Check out the Profile page after logging in. It only renders correctly if the user is logged in.
-    
+    <div class="jumbotron landing">
+      <h1>{{msg}}</h1>
+      <p class="lead buttons">
+        The Tinder app for brain images
+      </p>
+      <p class="buttons">
+        <router-link class="btn btn-primary white" to="/play"> Play Now </router-link>
+      </p>
+    </div>
 
   </div>
 
@@ -24,7 +22,7 @@ export default {
   name: 'Home',
   data() {
     return {
-      msg: 'Welcome to your Vue app boilerplate',
+      msg: 'Welcome to Neurotinder',
     };
   },
 };
@@ -52,6 +50,18 @@ a {
 
 .home h1 {
   text-align: center;
+}
+
+.buttons {
+  text-align: center;
+}
+
+.landing {
+  background-color: white;
+}
+
+.white {
+  color: white;
 }
 
 </style>

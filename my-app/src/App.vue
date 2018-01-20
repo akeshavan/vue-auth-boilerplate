@@ -23,25 +23,25 @@
         <b-navbar-nav>
           <b-nav-item to="/" exact>Home</b-nav-item>
           <b-nav-item to="/about">About</b-nav-item>
-          <b-nav-item to="/coins/bitcoin">Bitcoin</b-nav-item>
-          <b-nav-item to="/coins/ethereum">Ethereum</b-nav-item>
+          <b-nav-item to="/play">Play</b-nav-item>
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">
           <!-- This part only displays if the user is authenticated -->
-          <b-nav-item-dropdown right v-if="isAuthenticated">
+          <b-nav-item-dropdown right v-if="userInfo">
             <template slot="button-content">
-              <em>{{userInfo.username}}</em>
+              <em>{{userInfo.email}}</em>
             </template>
             <b-dropdown-item to="/profile">Profile</b-dropdown-item>
             <b-dropdown-item @click="logout">Signout</b-dropdown-item>
           </b-nav-item-dropdown>
 
           <!-- The login option shows if the user is not authenticated -->
-          <b-nav-item v-else>
-            <a @click="authenticate()">Login with GitHub</a>
-          </b-nav-item>
+
+          <b-nav-item v-else to="login">Login</b-nav-item>
+
+
 
         </b-navbar-nav>
 
@@ -50,7 +50,7 @@
 
     <!-- The content is in the router view -->
     <div class="router">
-      <router-view :isAuthenticated="isAuthenticated" :userInfo="userInfo"/>
+      <router-view :userInfo="userInfo"/>
     </div>
 
   </div>
@@ -61,64 +61,44 @@ import Vue from 'vue';
 import BootstrapVue from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
-import pathJoin from 'path.join';
-import axios from 'axios';
-import auth from './lib/auth';
+import VueFire from 'vuefire';
+import firebase from 'firebase';
 
-
+// explicit installation required in module environments
+Vue.use(VueFire);
 Vue.use(BootstrapVue);
+
 
 export default {
   name: 'app',
   data() {
     return {
-      isAuthenticated: false,
-      userInfo: {
-        username: null,
-      },
+      userInfo: {},
     };
   },
+  computed: {
+
+  },
   methods: {
-
-    authenticate() {
-      const self = this;
-      auth.login(() => {
-        self.getUserInfo();
-      });
-    },
-
-    getUserInfo() {
-      const token = auth.getToken();
-      const self = this;
-
-      // TODO: CHANGE THIS TO YOUR SERVER
-      // In this example, we are getting user info from github
-      // If this fails, then our token is bad; we are NOT authenticated and
-      // should be logged out
-
-      axios.get(pathJoin('https://api.github.com', 'user'), {
-        headers: {
-          Authorization: `token ${token}`,
-        },
-      }).then((resp) => {
-        self.isAuthenticated = true;
-
-        // TODO: do stuff here, like setting user info variables
-        self.userInfo.username = resp.data.login;
-        self.userInfo.avatar = resp.data.avatar_url;
-      }).catch(() => {
-        self.logout();
-      });
-    },
-
     logout() {
-      this.isAuthenticated = false;
-      auth.logout();
+      firebase.auth().signOut().then(() => {
+        this.userInfo = null;
+        this.$router.replace('login');
+      });
+    },
+    setUser(user) {
+      console.log('setting user', this.userInfo);
+      this.userInfo = user;
     },
   },
 
   created() {
-    this.getUserInfo();
+    this.userInfo = firebase.auth().currentUser;
+    const self = this;
+    firebase.auth().onAuthStateChanged((user) => {
+      console.log('hi');
+      self.userInfo = user;
+    });
   },
 };
 </script>
@@ -139,4 +119,16 @@ export default {
   .router {
     padding-top: 40px;
   }
+
+  #signupForm {
+    max-width: 400px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0px 0 7px 0px #80808036;
+  }
+
+  .inline {
+
+  }
+
 </style>
