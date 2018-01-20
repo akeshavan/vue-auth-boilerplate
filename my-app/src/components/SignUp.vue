@@ -2,7 +2,8 @@
   <div id="signup">
     <h1> Sign Up </h1>
     <div id="signupForm" class="container fluid">
-      <b-form @submit="onSubmit">
+      <b-form @submit="onSubmit" validated>
+        <b-alert :show="errors.show" variant="danger">{{errors.message}}</b-alert>
         <b-form-group id="emailAddressInputGroup"
                       label="Email address:"
                       label-for="emailAddress"
@@ -48,7 +49,7 @@
           </b-form-input>
         </b-form-group>
 
-        <b-button type="submit" variant="primary">Submit</b-button>
+        <b-button type="submit" variant="primary" :disabled="!validated">Submit</b-button>
 
         <p class="mt-3">
           Already have an account? <router-link to="/login">Log In</router-link>
@@ -77,15 +78,63 @@
           consented: false,
         },
         show: true,
+        errors: {
+          show: false,
+          message: null,
+        },
       };
+    },
+    computed: {
+      validated() {
+        return this.form.password === this.form.password2;
+      },
     },
     methods: {
       onSubmit() {
+        // check for a unique username
+        console.log('submitted form');
+        firebase.database().ref('users').child(this.form.username).once('value')
+        .then((snapshot) => {
+          const val = snapshot.val();
+          console.log('val is', val)
+          if (!val){
+            this.createAccount();
+          } else {
+            this.errors.show = true;
+            this.errors.message = 'Username already exists! Please choose a unique username';
+          }
+        });
+      },
+
+      createAccount() {
         firebase.auth().createUserWithEmailAndPassword(this.form.email, this.form.password).then(
           (user) => {
             console.log('user created', user);
+            this.updateProfile(user);
           }, (err) => {
           console.log('error', err);
+          this.errors.show = true;
+          this.errors.message = err.message;
+        });
+      },
+
+      insertUser(user) {
+        firebase.database().ref('users').child(user.displayName).set({
+          score: 0,
+          level: 0,
+        });
+      },
+      updateProfile(user) {
+        user.updateProfile({
+          displayName: this.form.username,
+        }).then(() => {
+            // Profile updated successfully!
+          this.$router.replace('play');
+          this.insertUser(user);
+        }, (err) => {
+            // An error happened.
+          this.errors.show = true;
+          this.errors.message = err.message;
         });
       },
     },

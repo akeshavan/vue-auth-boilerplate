@@ -3,6 +3,7 @@
     <h1> Log In </h1>
 
     <div id="signupForm" class="container fluid">
+      <b-alert :show="errors.show" variant="danger">{{errors.message}}</b-alert>
       <b-form @submit="onSubmit">
         <b-form-group id="emailAddressInputGroup"
                       label="Email address:"
@@ -54,6 +55,10 @@
           email: null,
           password: null,
         },
+        errors: {
+          show: false,
+          message: null,
+        },
       };
     },
     methods: {
@@ -65,7 +70,8 @@
                     this.$router.replace('play');
                   },
                   (err) => {
-                    alert(err.message);
+                    this.errors.show = true;
+                    this.errors.message = err.message;
                   },
                 );
       },
