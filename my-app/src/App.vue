@@ -65,7 +65,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import VueFire from 'vuefire';
 import firebase from 'firebase';
-// import db from './main';
+import { db } from './firebaseConfig';
 
 // explicit installation required in module environments
 Vue.use(VueFire);
@@ -81,9 +81,9 @@ export default {
     };
   },
 
-  /* firebase: {
+  firebase: {
     allUsers: db.ref('/users/'),
-  },*/
+  },
 
   computed: {
     userData() {
@@ -119,6 +119,7 @@ export default {
       console.log('hi');
       self.userInfo = user;
     });
+    console.log('app db is', db);
   },
 };
 </script>
