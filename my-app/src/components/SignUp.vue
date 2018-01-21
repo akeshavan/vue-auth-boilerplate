@@ -1,9 +1,28 @@
 <template name="signup">
   <div id="signup">
     <h1> Sign Up </h1>
+    <!-- Modal Component -->
+    <b-modal id="consentform" title="Consent Form"
+      ref="consentform" size="lg">
+      <terms></terms>
+      <div slot="modal-footer" class="w-100">
+        <b-form @submit="saveConsent">
+          <b-button type="submit" variant="primary">I Consent</b-button>
+        </b-form>
+      </div>
+
+    </b-modal>
+
     <div id="signupForm" class="container fluid">
       <b-form @submit="onSubmit" validated>
         <b-alert :show="errors.show" variant="danger">{{errors.message}}</b-alert>
+
+        <b-form-group id="consentOpenButton"
+                      :label="consentFormLabel"
+                      label-for="openConsent">
+            <b-button v-if="!form.consented" variant="success" id="openConsent" @click="openConsentModal"> Open Consent Form </b-button>
+        </b-form-group>
+
         <b-form-group id="emailAddressInputGroup"
                       label="Email address:"
                       label-for="emailAddress"
@@ -41,6 +60,9 @@
         <b-form-group id="password2InputGroup"
                       label="Password Again:"
                       label-for="password2Input">
+          <b-alert :show="!validated" variant="danger">
+            Make sure your passwords match!
+          </b-alert>
           <b-form-input id="password2Input"
                         type="password"
                         v-model="form.password2"
@@ -49,7 +71,9 @@
           </b-form-input>
         </b-form-group>
 
-        <b-button type="submit" variant="primary" :disabled="!validated">Submit</b-button>
+
+
+        <b-button type="submit" variant="primary" :disabled="!validated || !form.consented">Submit</b-button>
 
         <p class="mt-3">
           Already have an account? <router-link to="/login">Log In</router-link>
@@ -65,6 +89,7 @@
 <script>
 
   import firebase from 'firebase';
+  import Terms from '@/components/Terms';
 
   export default {
     name: 'signup',
@@ -84,9 +109,13 @@
         },
       };
     },
+    components: { terms: Terms },
     computed: {
       validated() {
         return this.form.password === this.form.password2;
+      },
+      consentFormLabel() {
+        return this.form.consented ? 'You have consented!' : 'Click to read and sign the consent form';
       },
     },
     methods: {
@@ -96,14 +125,23 @@
         firebase.database().ref('users').child(this.form.username).once('value')
         .then((snapshot) => {
           const val = snapshot.val();
-          console.log('val is', val)
-          if (!val){
+          console.log('val is', val);
+          if (!val) {
             this.createAccount();
           } else {
             this.errors.show = true;
             this.errors.message = 'Username already exists! Please choose a unique username';
           }
         });
+      },
+
+      saveConsent() {
+        this.form.consented = true;
+        this.$refs.consentform.hide();
+      },
+
+      openConsentModal() {
+        this.$refs.consentform.show();
       },
 
       createAccount() {
@@ -122,6 +160,8 @@
         firebase.database().ref('users').child(user.displayName).set({
           score: 0,
           level: 0,
+          consent: this.form.consented,
+          consentedOn: new Date(),
         });
       },
       updateProfile(user) {
