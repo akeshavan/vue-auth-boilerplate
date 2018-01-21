@@ -119,7 +119,8 @@
       },
     },
     methods: {
-      onSubmit() {
+      onSubmit(e) {
+        e.preventDefault();
         // check for a unique username
         console.log('submitted form');
         firebase.database().ref('users').child(this.form.username).once('value')

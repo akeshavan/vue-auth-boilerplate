@@ -62,7 +62,8 @@
       };
     },
     methods: {
-      onSubmit() {
+      onSubmit(e) {
+        e.preventDefault();
         firebase.auth().signInWithEmailAndPassword(this.form.email, this.form.password).then(
                   (user) => {
                     // console.log('user', user);

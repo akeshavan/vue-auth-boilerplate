@@ -23,7 +23,9 @@
         <b-navbar-nav>
           <b-nav-item to="/" exact>Home</b-nav-item>
           <b-nav-item to="/about">About</b-nav-item>
+          <b-nav-item to="/leaderboard">Leaderboard</b-nav-item>
           <b-nav-item to="/play">Play</b-nav-item>
+          <b-nav-item to="/upload" v-if="userData.admin">Upload</b-nav-item>
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->
@@ -31,7 +33,7 @@
           <!-- This part only displays if the user is authenticated -->
           <b-nav-item-dropdown right v-if="userInfo">
             <template slot="button-content">
-              <em>{{userInfo.email}}</em>
+              <em>{{userInfo.displayName}}</em>
             </template>
             <b-dropdown-item to="/profile">Profile</b-dropdown-item>
             <b-dropdown-item @click="logout">Signout</b-dropdown-item>
@@ -50,7 +52,7 @@
 
     <!-- The content is in the router view -->
     <div class="router">
-      <router-view :userInfo="userInfo"/>
+      <router-view :userInfo="userInfo" :userData="userData"/>
     </div>
 
   </div>
@@ -63,6 +65,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import VueFire from 'vuefire';
 import firebase from 'firebase';
+// import db from './main';
 
 // explicit installation required in module environments
 Vue.use(VueFire);
@@ -74,10 +77,27 @@ export default {
   data() {
     return {
       userInfo: {},
+      allUsers: [],
     };
   },
-  computed: {
 
+  /* firebase: {
+    allUsers: db.ref('/users/'),
+  },*/
+
+  computed: {
+    userData() {
+      let data = {};
+      if (!this.userInfo) {
+        return data;
+      }
+      this.allUsers.forEach((val) => {
+        if (val['.key'] === this.userInfo.displayName) {
+          data = val;
+        }
+      });
+      return data;
+    },
   },
   methods: {
     logout() {

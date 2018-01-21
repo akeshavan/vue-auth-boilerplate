@@ -8,6 +8,7 @@ import router from './router';
 
 Vue.config.productionTip = false;
 
+let app;
 
 const config = {
   apiKey: 'AIzaSyDUvIQct31754lEJDhJW2envdEkmqctX2I',
@@ -19,8 +20,6 @@ const config = {
 };
 
 firebase.initializeApp(config);
-window.firebase = firebase;
-let app;
 
 firebase.auth().onAuthStateChanged((user) => {
   if (!app) {
@@ -32,4 +31,9 @@ firebase.auth().onAuthStateChanged((user) => {
       router,
     });
   }
+  console.log('user is', user);
 });
+
+const db = firebase.database();
+console.log('db is', db);
+// export default { db };

@@ -9,6 +9,8 @@ import Login from '@/components/Login';
 import SignUp from '@/components/SignUp';
 import Terms from '@/components/Terms';
 import Upload from '@/components/Upload';
+import Unauthorized from '@/components/Unauthorized';
+import Leaderboard from '@/components/Leaderboard';
 import firebase from 'firebase';
 
 Vue.use(Router);
@@ -74,6 +76,16 @@ const router = new Router({
       name: 'Terms',
       component: Terms,
     },
+    {
+      path: '/unauthorized',
+      name: 'Unauthorized',
+      component: Unauthorized,
+    },
+    {
+      path: '/leaderboard',
+      name: 'Leaderboard',
+      component: Leaderboard,
+    },
   ],
 });
 
@@ -87,7 +99,7 @@ router.beforeEach((to, from, next) => {
     firebase.database().ref(`/users/${currentUser.displayName}`).once('value')
     .then((snap) => {
       console.log('snap is', snap.val());
-      if (requiresAdmin && !snap.val().admin) next('home');
+      if (requiresAdmin && !snap.val().admin) next('unauthorized');
       else next();
     });
   } else {
