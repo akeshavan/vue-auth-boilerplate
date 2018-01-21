@@ -7,9 +7,9 @@
               <img class="user-card__picture mx-auto" :src="images[index].pic" ></img>
             </div>
           <div class="user-card__name">
-            <b-button variant="danger" style="float:left" @click="swipeLeft"> Fail </b-button>
+            <b-button variant="danger" style="float:left" @click="swipeLeft" v-shortkey="['arrowleft']" @shortkey="swipeLeft"> Fail </b-button>
             <span class="align-middle">Fail or Pass</span>
-            <b-button variant="success" style="float:right" @click="swipeRight"> Pass </b-button>
+            <b-button variant="success" style="float:right" @click="swipeRight" v-shortkey="['arrowright']" @shortkey="swipeRight"> Pass </b-button>
           </div>
         </div>
         <!--<b-card :img-src="images[index].pic"
@@ -135,9 +135,10 @@
 </style>
 
 <script>
-
+  import Vue from 'vue';
   import { db } from '../firebaseConfig';
 
+  Vue.use(require('vue-shortkey'));
 
   export default {
     name: 'play',
