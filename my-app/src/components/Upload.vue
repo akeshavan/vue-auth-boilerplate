@@ -33,6 +33,13 @@
         </button>
       </div>
     </div>
+    <b-container fluid class="p-4 bg-dark mt-3">
+      <b-row>
+        <b-col v-for="image in images">
+          <b-img thumbnail fluid :src="image.pic" alt="Thumbnail" />
+        </b-col>
+      </b-row>
+    </b-container>
   </div>
 </template>
 
@@ -125,6 +132,8 @@ export default {
           pic: b64,
           num_votes: 0,
           votes: [],
+        }).then((res) => {
+          self.success = true;
         });
       };
       reader.onerror = function (error) {
