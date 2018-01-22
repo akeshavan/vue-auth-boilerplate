@@ -1,7 +1,13 @@
 <template name="upload">
   <div class="upload container">
-    <h1>File Upload</h1>
-    <div class="upload">
+    <h1> Data Management </h1>
+    <p>
+      This is a dashboard for the researcher to upload and view images in the braindr database.
+    </p>
+    <hr>
+    <h2>File Upload</h2>
+    <p class="lead">Select images to upload</p>
+    <div class="upload mb-3">
       <ul>
         <li v-for="(file, index) in files" :key="file.id">
           <span>{{file.name}}</span> -
@@ -12,7 +18,7 @@
           <span v-else></span>
         </li>
       </ul>
-      <div class="example-btn">
+      <div class="example-btn mb-3">
         <file-upload
           class="btn btn-primary mb-0"
           :post-action="null"
@@ -33,17 +39,67 @@
         </button>
       </div>
     </div>
-    <b-container fluid class="p-4 bg-dark mt-3">
-      <b-row>
-        <b-col v-for="image in images">
-          <b-img thumbnail fluid :src="image.pic" alt="Thumbnail" />
-        </b-col>
-      </b-row>
+    <hr>
+    <b-container class="mt-3">
+      <h2>
+        All images
+      </h2>
+      <p class="lead"> images that are currently in the database</p>
+    <section id="photos" class="mt-2">
+      <img v-for="image in images" :src="image.pic"/>
+    </section>
     </b-container>
   </div>
 </template>
 
 <style>
+  #photos {
+     /* Prevent vertical gaps */
+     line-height: 0;
+
+     -webkit-column-count: 5;
+     -webkit-column-gap:   0px;
+     -moz-column-count:    5;
+     -moz-column-gap:      0px;
+     column-count:         5;
+     column-gap:           0px;
+  }
+
+  #photos img {
+    /* Just in case there are inline attributes */
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  @media (max-width: 1200px) {
+    #photos {
+    -moz-column-count:    4;
+    -webkit-column-count: 4;
+    column-count:         4;
+    }
+  }
+  @media (max-width: 1000px) {
+    #photos {
+    -moz-column-count:    3;
+    -webkit-column-count: 3;
+    column-count:         3;
+    }
+  }
+  @media (max-width: 800px) {
+    #photos {
+    -moz-column-count:    2;
+    -webkit-column-count: 2;
+    column-count:         2;
+    }
+  }
+  @media (max-width: 400px) {
+    #photos {
+    -moz-column-count:    1;
+    -webkit-column-count: 1;
+    column-count:         1;
+    }
+  }
+
 </style>
 
 <script>
@@ -74,10 +130,12 @@ export default {
     return {
       files: [],
       images: [],
+      imageCount: [],
     };
   },
   firebase: {
     images: db.ref('images'),
+    imageCount: db.ref('imageCount'),
   },
   methods: {
     inputFilter(newFile, oldFile, prevent) {
@@ -130,9 +188,12 @@ export default {
         self.$firebaseRefs.images.child(img.name.split('.')[0]).set({
           filename: img.name,
           pic: b64,
-          num_votes: 0,
-        }).then((res) => {
+        }).then(() => {
           self.success = true;
+          self.$firebaseRefs.imageCount.child(img.name.split('.')[0]).set({
+            num_votes: 0,
+            ave_score: 0,
+          });
         });
       };
       reader.onerror = function (error) {

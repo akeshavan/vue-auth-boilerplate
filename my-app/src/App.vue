@@ -8,11 +8,12 @@
          When logged in, this shows the username with a dropdown menu
          to see the profile or logout.
     -->
+    <div class="content">
     <b-navbar toggleable="md" type="dark" variant="dark">
 
       <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
-      <b-navbar-brand href="#">braindr.</b-navbar-brand>
+      <b-navbar-brand to="/">braindr.</b-navbar-brand>
 
       <!-- If the viewport is small, the navbar collapses.
           Everything in b-collapse is what gets collapsed.
@@ -22,7 +23,6 @@
         <!--  Here are links to different routes  -->
         <b-navbar-nav>
           <b-nav-item to="/" exact>Home</b-nav-item>
-          <b-nav-item to="/about">About</b-nav-item>
           <b-nav-item to="/leaderboard">Leaderboard</b-nav-item>
           <b-nav-item to="/play">Play</b-nav-item>
           <b-nav-item to="/upload" v-if="userData.admin">Upload</b-nav-item>
@@ -54,6 +54,18 @@
     <!-- The content is in the router view -->
     <div class="router">
       <router-view :userInfo="userInfo" :userData="userData" :allUsers="allUsers"/>
+    </div>
+  </div>
+    <div class="footer bg-dark">
+      <table style="height: 200px; width: 100%;">
+        <tbody>
+          <tr>
+            <td class="align-middle text-center text-white">
+              <router-link to="/about" class="text-white">About</router-link>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
   </div>
@@ -130,6 +142,25 @@ export default {
     You can style your component here. Since this is a top level componentm
     the styles follow into child components.
   */
+
+  html, body {
+    height: 100%;
+  }
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+  .content {
+    flex: 1 0 auto;
+    min-height: -webkit-fill-available;
+    height: fit-content;
+  }
+
+  .footer {
+    position: relative;
+    height: 200px;
+  }
+
   #app {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;

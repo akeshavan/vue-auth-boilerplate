@@ -3,9 +3,9 @@
     <div class="">
 
       <transition :key="swipe" :name="swipe">
-        <div class="user-card" :key="index" v-if="images[index]">
+        <div class="user-card" :key="currentIndex" v-if="currentImage">
             <div class="image_area">
-              <img class="user-card__picture mx-auto" :src="images[index].pic"
+              <img class="user-card__picture mx-auto" :src="currentImage.pic"
               v-hammer:swipe.horizontal="onSwipe"
               ></img>
             </div>
@@ -178,16 +178,30 @@
 
   Vue.use(require('vue-shortkey'));
 
+function randomInt(min, max) {
+    return Math.floor(Math.random() * ((max - min) + 1)) + min;
+}
+
+
   export default {
     name: 'play',
     firebase: {
-      images: db.ref('images'),
+      // images: db.ref('images'),
+      imageCount: {
+        source: db.ref('imageCount'),
+        readyCallback() {
+          console.log('is ready', this.imageCount);
+          this.setCurrentImage();
+        },
+      },
     },
     props: ['userInfo', 'userData'],
     data() {
       return {
-        images: [],
-        index: 0,
+        // images: [],
+        currentImage: {},
+        currentIndex: null,
+        imageCount: [],
         swipe: null,
         startTime: null,
         dismissSecs: 1,
@@ -199,8 +213,8 @@
       };
     },
     computed: {
-      currentImg() {
-        return this.images[0];
+      currentCount() {
+        return this.imageCount[this.currentIndex];
       },
     },
     mounted() {
@@ -208,21 +222,29 @@
     },
     components: { VueHammer },
     methods: {
+      setCurrentImage() {
+        const N = this.imageCount.length;
+        this.currentIndex = randomInt(0, N - 1);
+        const key = this.currentCount['.key'];
+        console.log('key is', key);
+        db.ref('images').child(key).once('value').then((snap) => {
+          this.currentImage = snap.val();
+        });
+      },
       swipeLeft() {
-        this.images[this.index].pass = 0;
-        console.log(this.images[this.index]['.key']);
+        console.log(this.currentCount['.key']);
         const score = this.getScore(0);
         this.showAlert();
         this.sendVote(0);
         this.setSwipe('swipe-left');
-        this.setIndex();
+        this.setCurrentImage();
       },
       sendVote(vote) {
         db.ref('votes').push({
           username: this.userInfo.displayName,
           time: new Date() - this.startTime,
           vote,
-          image_id: this.images[this.index]['.key'],
+          image_id: this.currentCount['.key'],
         });
 
         /* this.$firebaseRefs.images.child(this.images[this.index]['.key'])
@@ -232,13 +254,12 @@
             vote,
           }); */
 
-        this.$firebaseRefs.images
-          .child(this.images[this.index]['.key'])
+        this.$firebaseRefs.imageCount
+          .child(this.currentCount['.key'])
           .child('num_votes')
-          .set(this.images[this.index].num_votes + 1);
+          .set(this.currentCount.num_votes + 1);
       },
       computeScore(data, vote) {
-
         let voteScore = 0;
         let size = 0;
 
@@ -285,7 +306,7 @@
 
         db.ref('votes')
           .orderByChild('image_id')
-          .equalTo(this.images[this.index]['.key'])
+          .equalTo(this.currentCount['.key'])
           .once('value')
           .then((snap) => {
             const data = snap.val();
@@ -296,12 +317,11 @@
           });
       },
       swipeRight() {
-        this.images[this.index].pass = 1;
         const score = this.getScore(1);
         this.showAlert();
         this.sendVote(1);
         this.setSwipe('swipe-right');
-        this.setIndex();
+        this.setCurrentImage();
       },
       setSwipe(sw) {
         console.log('setting swipe', sw);
@@ -313,14 +333,6 @@
         } else {
           this.swipeRight();
         }
-      },
-      setIndex() {
-        if (this.index === this.images.length - 1) {
-          this.index = 0;
-        } else {
-          this.index += 1;
-        }
-        this.startTime = new Date();
       },
       countDownChanged(dismissCountDown) {
         this.dismissCountDown = dismissCountDown;
