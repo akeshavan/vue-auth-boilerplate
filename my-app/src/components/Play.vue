@@ -270,12 +270,13 @@ function randomInt(min, max) {
         });
 
         const aveVote = voteScore / size;
+        const newAve = (voteScore + vote) / (size + 1);
 
         if (size <= 5) {
           // not enough votes to say.
           this.score.message = 'too few votes, you get a point!';
           this.score.variant = 'success';
-          return 1;
+          return { score: 1, ave: newAve };
         }
 
         if (aveVote <= 0.3 || aveVote >= 0.7) {
@@ -283,22 +284,22 @@ function randomInt(min, max) {
           if (aveVote <= 0.3 && !vote) {
             this.score.message = 'you agree w/ group: 0';
             this.score.variant = 'success';
-            return 1;
+            return { score: 1, ave: newAve };
           } else if (aveVote >= 0.7 && vote) {
             this.score.message = 'you agree w/ group: 1';
             this.score.variant = 'success';
-            return 1;
+            return { score: 1, ave: newAve };
           }
 
           // you disagree w/ the majority. You are penalized
           this.score.message = 'you disagree w/ the majority. You are penalized';
           this.score.variant = 'danger';
-          return 0;
+          return { score: 0, ave: newAve };
         }
 
         this.score.message = 'group is undecided, you get a point';
         this.score.variant = 'success';
-        return 1;
+        return { score: 1, ave: newAve };
       },
       getScore(vote) {
         // get all scores for the images
@@ -313,7 +314,12 @@ function randomInt(min, max) {
             console.log('snap data is', data);
             const score = this.computeScore(data, vote);
             db.ref('users').child(this.userInfo.displayName)
-              .child('score').set(this.userData.score + score);
+              .child('score').set(this.userData.score + score.score);
+
+            this.$firebaseRefs.imageCount
+                .child(this.currentCount['.key'])
+                .child('ave_score')
+                .set(score.ave);
           });
       },
       swipeRight() {

@@ -4,9 +4,13 @@
     <p>
       This is a dashboard for the researcher to upload and view images in the braindr database.
     </p>
+
     <hr>
     <h2>File Upload</h2>
     <p class="lead">Select images to upload</p>
+    <b-alert variant="warning" show>
+      <strong>Warning:</strong> Make sure your filenames are unique!
+    </b-alert>
     <div class="upload mb-3">
       <ul>
         <li v-for="(file, index) in files" :key="file.id">
@@ -134,7 +138,7 @@ export default {
     };
   },
   firebase: {
-    images: db.ref('images'),
+    images: db.ref('images').limitToLast(25),
     imageCount: db.ref('imageCount'),
   },
   methods: {
