@@ -127,11 +127,10 @@ export default {
       reader.readAsDataURL(img.file);
       reader.onload = function () {
         const b64 = reader.result;
-        self.$firebaseRefs.images.push({
+        self.$firebaseRefs.images.child(img.name.split('.')[0]).set({
           filename: img.name,
           pic: b64,
           num_votes: 0,
-          votes: [],
         }).then((res) => {
           self.success = true;
         });

@@ -8,11 +8,11 @@
          When logged in, this shows the username with a dropdown menu
          to see the profile or logout.
     -->
-    <b-navbar toggleable="md" type="dark" variant="info">
+    <b-navbar toggleable="md" type="dark" variant="dark">
 
       <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
-      <b-navbar-brand href="#">my-app</b-navbar-brand>
+      <b-navbar-brand href="#">braindr.</b-navbar-brand>
 
       <!-- If the viewport is small, the navbar collapses.
           Everything in b-collapse is what gets collapsed.
@@ -43,6 +43,7 @@
 
           <b-nav-item v-else to="login">Login</b-nav-item>
 
+          <b-nav-text v-if="userInfo">{{userData.score}}</b-nav-text>
 
 
         </b-navbar-nav>
@@ -52,7 +53,7 @@
 
     <!-- The content is in the router view -->
     <div class="router">
-      <router-view :userInfo="userInfo" :userData="userData"/>
+      <router-view :userInfo="userInfo" :userData="userData" :allUsers="allUsers"/>
     </div>
 
   </div>

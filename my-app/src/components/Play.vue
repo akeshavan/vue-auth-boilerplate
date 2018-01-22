@@ -1,15 +1,29 @@
 <template name="play">
   <div id="play" class="container">
     <div class="">
+
       <transition :key="swipe" :name="swipe">
         <div class="user-card" :key="index" v-if="images[index]">
             <div class="image_area">
-              <img class="user-card__picture mx-auto" :src="images[index].pic" ></img>
+              <img class="user-card__picture mx-auto" :src="images[index].pic"
+              v-hammer:swipe.horizontal="onSwipe"
+              ></img>
             </div>
           <div class="user-card__name">
-            <b-button variant="danger" style="float:left" @click="swipeLeft" v-shortkey="['arrowleft']" @shortkey="swipeLeft"> Fail </b-button>
+            <b-button variant="danger"
+              style="float:left"
+              @click="swipeLeft"
+              v-shortkey="['arrowleft']"
+              @shortkey="swipeLeft"
+              v-hammer:swipe.left="swipeLeft"
+            > Fail </b-button>
             <span class="align-middle">Fail or Pass</span>
-            <b-button variant="success" style="float:right" @click="swipeRight" v-shortkey="['arrowright']" @shortkey="swipeRight"> Pass </b-button>
+            <b-button variant="success"
+              style="float:right"
+              @click="swipeRight"
+              v-shortkey="['arrowright']"
+              @shortkey="swipeRight"
+            > Pass </b-button>
           </div>
         </div>
         <!--<b-card :img-src="images[index].pic"
@@ -25,6 +39,15 @@
         </b-card>-->
 
       </transition>
+
+      <b-alert :show="dismissCountDown"
+         :variant="score.variant"
+         class="toast"
+         @dismissed="dismissCountdown=0"
+         @dismiss-count-down="countDownChanged">
+         {{score.message}}
+      </b-alert>
+
     </div>
 
   </div>
@@ -132,11 +155,26 @@
             transform: rotate(-13deg) translate3d(-100%, 0, 0);
     opacity: 0;
   }
+
+  .toast {
+    width: auto;
+    max-width: 300px;
+    top: 60px;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+  }
+
 </style>
 
 <script>
   import Vue from 'vue';
+  import _ from 'lodash';
+  import { VueHammer } from 'vue2-hammer';
   import { db } from '../firebaseConfig';
+  window.db = db;
+  Vue.use(VueHammer);
 
   Vue.use(require('vue-shortkey'));
 
@@ -145,11 +183,19 @@
     firebase: {
       images: db.ref('images'),
     },
+    props: ['userInfo', 'userData'],
     data() {
       return {
         images: [],
         index: 0,
         swipe: null,
+        startTime: null,
+        dismissSecs: 1,
+        dismissCountDown: 0,
+        score: {
+          variant: 'warning',
+          message: '',
+        },
       };
     },
     computed: {
@@ -157,14 +203,103 @@
         return this.images[0];
       },
     },
+    mounted() {
+      this.startTime = new Date();
+    },
+    components: { VueHammer },
     methods: {
       swipeLeft() {
         this.images[this.index].pass = 0;
+        console.log(this.images[this.index]['.key']);
+        const score = this.getScore(0);
+        this.showAlert();
+        this.sendVote(0);
         this.setSwipe('swipe-left');
         this.setIndex();
       },
+      sendVote(vote) {
+        db.ref('votes').push({
+          username: this.userInfo.displayName,
+          time: new Date() - this.startTime,
+          vote,
+          image_id: this.images[this.index]['.key'],
+        });
+
+        /* this.$firebaseRefs.images.child(this.images[this.index]['.key'])
+          .child('votes').push({
+            username: this.userInfo.displayName,
+            time: new Date() - this.startTime,
+            vote,
+          }); */
+
+        this.$firebaseRefs.images
+          .child(this.images[this.index]['.key'])
+          .child('num_votes')
+          .set(this.images[this.index].num_votes + 1);
+      },
+      computeScore(data, vote) {
+
+        let voteScore = 0;
+        let size = 0;
+
+        _.mapValues(data, (v) => {
+          voteScore += v.vote;
+          size += 1;
+          return v.vote;
+        });
+
+        const aveVote = voteScore / size;
+
+        if (size <= 5) {
+          // not enough votes to say.
+          this.score.message = 'too few votes, you get a point!';
+          this.score.variant = 'success';
+          return 1;
+        }
+
+        if (aveVote <= 0.3 || aveVote >= 0.7) {
+          // the group feels strongly. Do you agree w/ them?
+          if (aveVote <= 0.3 && !vote) {
+            this.score.message = 'you agree w/ group: 0';
+            this.score.variant = 'success';
+            return 1;
+          } else if (aveVote >= 0.7 && vote) {
+            this.score.message = 'you agree w/ group: 1';
+            this.score.variant = 'success';
+            return 1;
+          }
+
+          // you disagree w/ the majority. You are penalized
+          this.score.message = 'you disagree w/ the majority. You are penalized';
+          this.score.variant = 'danger';
+          return 0;
+        }
+
+        this.score.message = 'group is undecided, you get a point';
+        this.score.variant = 'success';
+        return 1;
+      },
+      getScore(vote) {
+        // get all scores for the images
+        // then run computeScore to get the points
+
+        db.ref('votes')
+          .orderByChild('image_id')
+          .equalTo(this.images[this.index]['.key'])
+          .once('value')
+          .then((snap) => {
+            const data = snap.val();
+            console.log('snap data is', data);
+            const score = this.computeScore(data, vote);
+            db.ref('users').child(this.userInfo.displayName)
+              .child('score').set(this.userData.score + score);
+          });
+      },
       swipeRight() {
-        this.images[this.index].pass = 0;
+        this.images[this.index].pass = 1;
+        const score = this.getScore(1);
+        this.showAlert();
+        this.sendVote(1);
         this.setSwipe('swipe-right');
         this.setIndex();
       },
@@ -172,12 +307,26 @@
         console.log('setting swipe', sw);
         this.swipe = sw;
       },
+      onSwipe(evt) {
+        if (evt.direction === 2) {
+          this.swipeLeft();
+        } else {
+          this.swipeRight();
+        }
+      },
       setIndex() {
         if (this.index === this.images.length - 1) {
           this.index = 0;
         } else {
           this.index += 1;
         }
+        this.startTime = new Date();
+      },
+      countDownChanged(dismissCountDown) {
+        this.dismissCountDown = dismissCountDown;
+      },
+      showAlert() {
+        this.dismissCountDown = this.dismissSecs;
       },
     },
   };

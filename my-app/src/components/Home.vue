@@ -2,13 +2,18 @@
   <div class="home container">
     <div class="jumbotron landing">
       <h1>{{msg}}</h1>
-      <p class="lead buttons">
-        The Tinder app for brain images
+      <p class="lead buttons mt-3">
+        Swipe right for results
       </p>
-      <p class="buttons">
+      <p class="buttons mt-3">
         <router-link class="btn btn-primary white" to="/play"> Play Now </router-link>
       </p>
     </div>
+    <!--<div class="container">
+      <div class="row">
+        <img class="mx-auto" src="../assets/mainGIF.gif"/>
+      </div>
+    </div>-->
 
   </div>
 
@@ -22,7 +27,7 @@ export default {
   name: 'Home',
   data() {
     return {
-      msg: 'Welcome to Neurotinder',
+      msg: 'braindr.',
     };
   },
 };
@@ -58,6 +63,24 @@ a {
 
 .landing {
   background-color: white;
+  background-image: url('../assets/mainGIF.gif');
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 80vh;
+}
+
+.landing h1 {
+  background-color: black;
+  color: white;
+  max-width: 250px;
+  margin: auto;
+}
+
+.landing .lead {
+  background-color: black;
+  color: white;
+  max-width: 250px;
+  margin: auto;
 }
 
 .white {
