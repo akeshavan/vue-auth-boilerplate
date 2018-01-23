@@ -65,7 +65,9 @@
                    :userData="userData"
                    :allUsers="allUsers"
                    :levels="levels"
-                   :currentLevel="currentLevel"/>
+                   :currentLevel="currentLevel"
+                   v-on:taken_tutorial="setTutorial"
+                   />
     </div>
   </div>
     <div class="footer bg-dark">
@@ -134,7 +136,7 @@ export default {
           img: giraffe,
         },
         3: {
-          min: 2000,
+          min: 2001,
           max: 3500,
           character: 'elephant',
           img: elephant,
@@ -176,8 +178,7 @@ export default {
     currentLevel() {
       let clev = {};
       _.mapValues(this.levels, (val) => {
-        console.log('level mapping', this.userData.score > val.min && this.userData.score < val.max)
-        if (this.userData.score > val.min && this.userData.score < val.max) {
+        if (this.userData.score >= val.min && this.userData.score <= val.max) {
           clev = val;
         }
       });
@@ -195,6 +196,9 @@ export default {
     setUser(user) {
       console.log('setting user', this.userInfo);
       this.userInfo = user;
+    },
+    setTutorial(val) {
+      db.ref(`/users/${this.userInfo.displayName}`).child('taken_tutorial').set(val);
     },
   },
 

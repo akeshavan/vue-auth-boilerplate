@@ -136,7 +136,8 @@
         });
       },
 
-      saveConsent() {
+      saveConsent(e) {
+        e.preventDefault();
         this.form.consented = true;
         this.$refs.consentform.hide();
       },
@@ -161,6 +162,7 @@
         firebase.database().ref('users').child(user.displayName).set({
           score: 0,
           level: 0,
+          taken_tutorial: false,
           consent: this.form.consented,
           consentedOn: new Date(),
         });
@@ -170,7 +172,7 @@
           displayName: this.form.username,
         }).then(() => {
             // Profile updated successfully!
-          this.$router.replace('play');
+          this.$router.replace('tutorial');
           this.insertUser(user);
         }, (err) => {
             // An error happened.

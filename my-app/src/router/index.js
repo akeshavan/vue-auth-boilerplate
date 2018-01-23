@@ -11,6 +11,7 @@ import Terms from '@/components/Terms';
 import Upload from '@/components/Upload';
 import Unauthorized from '@/components/Unauthorized';
 import Leaderboard from '@/components/Leaderboard';
+import Tutorial from '@/components/Tutorial';
 import firebase from 'firebase';
 
 Vue.use(Router);
@@ -86,6 +87,11 @@ const router = new Router({
       name: 'Leaderboard',
       component: Leaderboard,
     },
+    {
+      path: '/tutorial',
+      name: 'Tutorial',
+      component: Tutorial,
+    },
   ],
 });
 
@@ -93,6 +99,18 @@ router.beforeEach((to, from, next) => {
   const currentUser = firebase.auth().currentUser;
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
   const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin);
+
+  // make sure the user has take the tutorial
+  if (to.name === 'Play') {
+    firebase.database().ref(`/users/${currentUser.displayName}`).once('value')
+      .then((snap) => {
+        const data = snap.val();
+        if (!data.taken_tutorial) {
+          next('tutorial');
+        }
+      });
+  }
+
   if (requiresAuth && !currentUser) next('login');
   if (requiresAdmin) {
     console.log('requires admin');

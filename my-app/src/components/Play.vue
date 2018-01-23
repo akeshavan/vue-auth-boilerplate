@@ -1,7 +1,13 @@
 <template name="play">
   <div id="play" class="container">
-    <div class="">
+    <!-- Modal Component -->
+    <b-modal id="levelUp" ref="levelUp" title="You've Levelled Up!" ok-only>
+      <p class="my-4">
+        <img :src="currentLevel.img" width="120px" height="120px"/>
+      </p>
+    </b-modal>
 
+    <div class="">
       <transition :key="swipe" :name="swipe">
         <div class="user-card" :key="currentIndex" v-if="currentImage">
             <div class="image_area">
@@ -195,7 +201,7 @@ function randomInt(min, max) {
         },
       },
     },
-    props: ['userInfo', 'userData', 'levels'],
+    props: ['userInfo', 'userData', 'levels', 'currentLevel'],
     data() {
       return {
         // images: [],
@@ -205,6 +211,7 @@ function randomInt(min, max) {
         swipe: null,
         startTime: null,
         dismissSecs: 1,
+        pointsAward: null,
         dismissCountDown: 0,
         score: {
           variant: 'warning',
@@ -215,6 +222,14 @@ function randomInt(min, max) {
     computed: {
       currentCount() {
         return this.imageCount[this.currentIndex];
+      },
+    },
+    watch: {
+      currentLevel() {
+        console.log("detected change",this.userData.score, this.currentLevel.min)
+        if (this.userData.score === this.currentLevel.min) {
+          this.$refs.levelUp.show();
+        }
       },
     },
     mounted() {
@@ -229,6 +244,7 @@ function randomInt(min, max) {
         console.log('key is', key);
         db.ref('images').child(key).once('value').then((snap) => {
           this.currentImage = snap.val();
+          this.startTime = new Date();
         });
       },
       swipeLeft() {
@@ -246,6 +262,7 @@ function randomInt(min, max) {
           username: this.userInfo.displayName,
           time: new Date() - this.startTime,
           vote,
+          point: this.pointsAward,
           image_id: this.currentCount['.key'],
         });
 
@@ -308,6 +325,7 @@ function randomInt(min, max) {
             const data = snap.val();
             console.log('snap data is', data);
             const score = this.computeScore(data, vote);
+            this.pointsAward = score.score;
             db.ref('users').child(this.userInfo.displayName)
               .child('score').set(this.userData.score + score.score);
 
