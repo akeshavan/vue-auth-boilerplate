@@ -8,6 +8,7 @@
           height="75" blank-color="#777"
           alt="img" class="m-1"
           :src="currentLevel.img"
+          v-if="currentLevel.img"
           />
         {{userInfo.displayName}}
       </h1>

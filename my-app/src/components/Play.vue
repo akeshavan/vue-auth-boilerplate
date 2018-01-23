@@ -195,7 +195,6 @@
   import imagesLoaded from 'vue-images-loaded';
   import GridLoader from 'vue-spinner/src/PulseLoader';
   import { db } from '../firebaseConfig';
-  import blank from '../assets/blank.svg';
 
   Vue.use(VueHammer);
 
@@ -248,7 +247,7 @@ function randomInt(min, max) {
     watch: {
       currentLevel() {
         console.log('detected change', this.userData.score, this.currentLevel.min);
-        if (this.userData.score === this.currentLevel.min) {
+        if (this.userData.score === this.currentLevel.min && this.currentLevel.min) {
           this.$refs.levelUp.show();
           db.ref(`/users/${this.userInfo.displayName}`).child('level').set(this.currentLevel.level);
         }
