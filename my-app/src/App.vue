@@ -118,36 +118,42 @@ export default {
       allUsers: [],
       levels: {
         0: {
+          level: 0,
           min: 0,
           max: 100,
           character: null,
           img: null,
         },
         1: {
+          level: 1,
           min: 101,
           max: 750,
           character: 'jelly',
           img: jelly,
         },
         2: {
+          level: 2,
           min: 751,
           max: 2000,
           character: 'giraffe',
           img: giraffe,
         },
         3: {
+          level: 3,
           min: 2001,
           max: 3500,
           character: 'elephant',
           img: elephant,
         },
         4: {
+          level: 4,
           min: 3501,
           max: 6000,
           character: 'narwhal',
           img: narwhal,
         },
         5: {
+          level: 5,
           min: 6001,
           max: 8000,
           character: 'monkey',

@@ -9,11 +9,15 @@
 
     <div class="">
       <transition :key="swipe" :name="swipe">
-        <div class="user-card" :key="currentIndex" v-if="currentImage">
-            <div class="image_area">
+        <div class="user-card" :key="currentIndex">
+            <div class="image_area"  v-images-loaded="loaded">
+              <div v-if="status == 'loading'">
+                <grid-loader class="loader" color="#ffc107"></grid-loader>
+              </div>
               <img class="user-card__picture mx-auto" :src="currentImage.pic"
               v-hammer:swipe.horizontal="onSwipe"
-              ></img>
+              >
+              </img>
             </div>
           <div class="user-card__name">
             <b-button variant="danger"
@@ -81,6 +85,14 @@
 
   .image_area {
     background: black;
+    position: relative;
+  }
+
+  .loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   .user-card__name {
@@ -178,6 +190,8 @@
   import Vue from 'vue';
   import _ from 'lodash';
   import { VueHammer } from 'vue2-hammer';
+  import imagesLoaded from 'vue-images-loaded';
+  import GridLoader from 'vue-spinner/src/PulseLoader';
   import { db } from '../firebaseConfig';
 
   Vue.use(VueHammer);
@@ -197,6 +211,7 @@ function randomInt(min, max) {
         source: db.ref('imageCount'),
         readyCallback() {
           console.log('is ready', this.imageCount);
+          this.status = 'loading';
           this.setCurrentImage();
         },
       },
@@ -217,6 +232,7 @@ function randomInt(min, max) {
           variant: 'warning',
           message: '',
         },
+        status: 'not_ready',
       };
     },
     computed: {
@@ -226,17 +242,25 @@ function randomInt(min, max) {
     },
     watch: {
       currentLevel() {
-        console.log("detected change",this.userData.score, this.currentLevel.min)
+        console.log('detected change', this.userData.score, this.currentLevel.min);
         if (this.userData.score === this.currentLevel.min) {
           this.$refs.levelUp.show();
+          db.ref(`/users/${this.userInfo.displayName}`).child('level').set(this.currentLevel.level);
         }
       },
     },
     mounted() {
       this.startTime = new Date();
     },
-    components: { VueHammer },
+    components: { VueHammer, GridLoader },
+    directives: {
+      imagesLoaded,
+    },
     methods: {
+      loaded() {
+        console.log('image loaded');
+        this.status = 'ready';
+      },
       setCurrentImage() {
         const N = this.imageCount.length;
         this.currentIndex = randomInt(0, N - 1);
@@ -249,6 +273,7 @@ function randomInt(min, max) {
       },
       swipeLeft() {
         console.log(this.currentCount['.key']);
+        this.status = 'loading';
         this.getScore(0).then(() => {
           this.showAlert();
           this.sendVote(0).then(() => {
@@ -338,6 +363,7 @@ function randomInt(min, max) {
           });
       },
       swipeRight() {
+        this.status = 'loading';
         this.getScore(1).then(() => {
           this.showAlert();
           this.sendVote(1).then(() => {

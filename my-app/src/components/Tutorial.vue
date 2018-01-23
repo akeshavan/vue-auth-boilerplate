@@ -158,12 +158,12 @@
 
 <script>
 import Vue from 'vue';
-import { db } from '../firebaseConfig';
 import { VueHammer } from 'vue2-hammer';
 import _ from 'lodash';
+import { db } from '../firebaseConfig';
 
 function randomInt(min, max) {
-    return Math.floor(Math.random() * ((max - min) + 1)) + min;
+  return Math.floor(Math.random() * ((max - min) + 1)) + min;
 }
 
 Vue.use(VueHammer);
@@ -203,10 +203,10 @@ export default {
   components: { VueHammer },
   watch: {
     count() {
-      if (this.count === 5){
+      if (this.count === 5) {
         this.$emit('taken_tutorial', true);
       }
-    }
+    },
   },
   methods: {
     swipeLeft() {
