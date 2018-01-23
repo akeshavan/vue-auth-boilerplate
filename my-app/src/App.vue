@@ -43,7 +43,15 @@
 
           <b-nav-item v-else to="login">Login</b-nav-item>
 
-          <b-nav-text v-if="userInfo">{{userData.score}}</b-nav-text>
+          <b-nav-text v-if="userInfo">
+            <b-img v-if="currentLevel.img"
+              rounded="circle" width="20"
+              height="20"
+              alt="img" class="m-1"
+              :src="currentLevel.img"
+              />
+            {{userData.score}}
+          </b-nav-text>
 
 
         </b-navbar-nav>
@@ -53,7 +61,11 @@
 
     <!-- The content is in the router view -->
     <div class="router">
-      <router-view :userInfo="userInfo" :userData="userData" :allUsers="allUsers"/>
+      <router-view :userInfo="userInfo"
+                   :userData="userData"
+                   :allUsers="allUsers"
+                   :levels="levels"
+                   :currentLevel="currentLevel"/>
     </div>
   </div>
     <div class="footer bg-dark">
@@ -81,9 +93,15 @@ import Vue from 'vue';
 import BootstrapVue from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
+import _ from 'lodash';
 import VueFire from 'vuefire';
 import firebase from 'firebase';
 import { db } from './firebaseConfig';
+import jelly from './assets/jelly.svg';
+import giraffe from './assets/giraffe.svg';
+import elephant from './assets/elephant.svg';
+import narwhal from './assets/narwhal.svg';
+import monkey from './assets/monkey.svg';
 
 // explicit installation required in module environments
 Vue.use(VueFire);
@@ -96,6 +114,44 @@ export default {
     return {
       userInfo: {},
       allUsers: [],
+      levels: {
+        0: {
+          min: 0,
+          max: 100,
+          character: null,
+          img: null,
+        },
+        1: {
+          min: 101,
+          max: 750,
+          character: 'jelly',
+          img: jelly,
+        },
+        2: {
+          min: 751,
+          max: 2000,
+          character: 'giraffe',
+          img: giraffe,
+        },
+        3: {
+          min: 2000,
+          max: 3500,
+          character: 'elephant',
+          img: elephant,
+        },
+        4: {
+          min: 3501,
+          max: 6000,
+          character: 'narwhal',
+          img: narwhal,
+        },
+        5: {
+          min: 6001,
+          max: 8000,
+          character: 'monkey',
+          img: monkey,
+        },
+      },
     };
   },
 
@@ -115,6 +171,18 @@ export default {
         }
       });
       return data;
+    },
+
+    currentLevel() {
+      let clev = {};
+      _.mapValues(this.levels, (val) => {
+        console.log('level mapping', this.userData.score > val.min && this.userData.score < val.max)
+        if (this.userData.score > val.min && this.userData.score < val.max) {
+          clev = val;
+        }
+      });
+
+      return clev;
     },
   },
   methods: {

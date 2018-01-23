@@ -12,6 +12,7 @@
       <strong>Warning:</strong> Make sure your filenames are unique!
     </b-alert>
     <div class="upload mb-3">
+      {{files.length}}
       <ul>
         <li v-for="(file, index) in files" :key="file.id">
           <span>{{file.name}}</span> -
@@ -46,7 +47,7 @@
     <hr>
     <b-container class="mt-3">
       <h2>
-        All images
+        All images: {{imageCount.length}}
       </h2>
       <p class="lead"> images that are currently in the database</p>
     <section id="photos" class="mt-2">
@@ -114,15 +115,15 @@ import { db } from '../firebaseConfig';
 
 Vue.filter('formatSize', (size) => {
   if (size > 1024 * 1024 * 1024 * 1024) {
-    return (size / 1024 / 1024 / 1024 / 1024).toFixed(2) + ' TB'
+    return (size / 1024 / 1024 / 1024 / 1024).toFixed(2) + ' TB';
   } else if (size > 1024 * 1024 * 1024) {
-    return (size / 1024 / 1024 / 1024).toFixed(2) + ' GB'
+    return (size / 1024 / 1024 / 1024).toFixed(2) + ' GB';
   } else if (size > 1024 * 1024) {
-    return (size / 1024 / 1024).toFixed(2) + ' MB'
+    return (size / 1024 / 1024).toFixed(2) + ' MB';
   } else if (size > 1024) {
-    return (size / 1024).toFixed(2) + ' KB'
+    return (size / 1024).toFixed(2) + ' KB';
   }
-  return size.toString() + ' B'
+  return size.toString() + ' B';
 });
 
 export default {
@@ -161,26 +162,26 @@ export default {
     inputFile(newFile, oldFile) {
       if (newFile && !oldFile) {
         // add
-        console.log('add', newFile)
+        console.log('add', newFile);
       }
       if (newFile && oldFile) {
         // update
-        console.log('update', newFile)
+        console.log('update', newFile);
       }
 
       if (!newFile && oldFile) {
         // remove
-        console.log('remove', oldFile)
+        console.log('remove', oldFile);
       }
     },
 
     doUpload(e) {
       e.preventDefault();
-      var self = this;
+      const self = this;
       this.files.forEach((val) => {
-        console.log('va;', val.file)
+        console.log('va;', val.file);
         self.getBase64(val);
-      })
+      });
     },
 
     getBase64(img) {
@@ -193,7 +194,7 @@ export default {
           filename: img.name,
           pic: b64,
         }).then(() => {
-          self.success = true;
+          img.success = true;
           self.$firebaseRefs.imageCount.child(img.name.split('.')[0]).set({
             num_votes: 0,
             ave_score: 0,

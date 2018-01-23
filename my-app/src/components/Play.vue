@@ -195,7 +195,7 @@ function randomInt(min, max) {
         },
       },
     },
-    props: ['userInfo', 'userData'],
+    props: ['userInfo', 'userData', 'levels'],
     data() {
       return {
         // images: [],
@@ -242,17 +242,17 @@ function randomInt(min, max) {
         });
       },
       sendVote(vote) {
-        db.ref('votes').push({
+        return db.ref('votes').push({
           username: this.userInfo.displayName,
           time: new Date() - this.startTime,
           vote,
           image_id: this.currentCount['.key'],
         });
 
-        return this.$firebaseRefs.imageCount
+         /* this.$firebaseRefs.imageCount
           .child(this.currentCount['.key'])
           .child('num_votes')
-          .set(this.currentCount.num_votes + 1);
+          .set(this.currentCount.num_votes + 1); */
       },
       computeScore(data, vote) {
         let voteScore = 0;
@@ -271,7 +271,7 @@ function randomInt(min, max) {
           // not enough votes to say.
           this.score.message = 'too few votes, you get a point!';
           this.score.variant = 'success';
-          return { score: 1, ave: newAve };
+          return { score: 1, ave: newAve, size: size + 1 };
         }
 
         if (aveVote <= 0.3 || aveVote >= 0.7) {
@@ -279,22 +279,22 @@ function randomInt(min, max) {
           if (aveVote <= 0.3 && !vote) {
             this.score.message = 'you agree w/ group: 0';
             this.score.variant = 'success';
-            return { score: 1, ave: newAve };
+            return { score: 1, ave: newAve, size: size + 1 };
           } else if (aveVote >= 0.7 && vote) {
             this.score.message = 'you agree w/ group: 1';
             this.score.variant = 'success';
-            return { score: 1, ave: newAve };
+            return { score: 1, ave: newAve, size: size + 1 };
           }
 
           // you disagree w/ the majority. You are penalized
           this.score.message = 'you disagree w/ the majority. You are penalized';
           this.score.variant = 'danger';
-          return { score: 0, ave: newAve };
+          return { score: 0, ave: newAve, size: size + 1 };
         }
 
         this.score.message = 'group is undecided, you get a point';
         this.score.variant = 'success';
-        return { score: 1, ave: newAve };
+        return { score: 1, ave: newAve, size: size + 1 };
       },
       getScore(vote) {
         // get all scores for the images
@@ -313,8 +313,10 @@ function randomInt(min, max) {
 
             this.$firebaseRefs.imageCount
                 .child(this.currentCount['.key'])
-                .child('ave_score')
-                .set(score.ave);
+                .set({
+                  ave_score: score.ave,
+                  num_votes: score.size,
+                });
           });
       },
       swipeRight() {

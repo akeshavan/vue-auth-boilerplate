@@ -96,10 +96,10 @@ router.beforeEach((to, from, next) => {
   if (requiresAuth && !currentUser) next('login');
   if (requiresAdmin) {
     console.log('requires admin');
-    firebase.database().ref(`/users/${currentUser.displayName}`).once('value')
+    firebase.database().ref(`/settings/admins/${currentUser.displayName}`).once('value')
     .then((snap) => {
       console.log('snap is', snap.val());
-      if (requiresAdmin && !snap.val().admin) next('unauthorized');
+      if (requiresAdmin && !snap.val()) next('unauthorized');
       else next();
     });
   } else {

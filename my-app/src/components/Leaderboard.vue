@@ -13,7 +13,7 @@
 
   export default {
     name: 'leaderboard',
-    props: ['allUsers'],
+    props: ['allUsers', 'levels'],
     data() {
       return {
         sortBy: 'score',
