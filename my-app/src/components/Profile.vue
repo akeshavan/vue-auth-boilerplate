@@ -12,16 +12,43 @@
         {{userInfo.displayName}}
       </h1>
 
-      <p>
+      <p class="lead">
         You have {{userData.score}} points!
       </p>
+      <hr>
+
+      <h3>Level {{currentLevel.level}}</h3>
+      <p class="lead">
+        Keep playing to unlock the remaining animals!
+      </p>
+
+      <b-container fluid class="p-4">
+        <b-row>
+          <b-col v-for="lev in levels" v-if="lev.img">
+            <div >
+              <b-img fluid class="pokemon" :src="lev.img" alt="Thumbnail" v-if="lev.level <= currentLevel.level"/>
+              <b-img fluid class="pokemon" :src="lev.img_grey" alt="Thumbnail" v-else/>
+              <br>
+              Level {{lev.level}}
+              <br>
+              <span v-if="lev.level > currentLevel.level">{{lev.min}} points</span>
+            </div>
+          </b-col>
+        </b-row>
+      </b-container>
+
     </b-container>
 
   </div>
 </template>
 
 <style>
-
+.pokemon{
+  min-width: 25px;
+  min-height: 25px;
+  width: 100px;
+  height: 100px;
+}
 </style>
 
 <script>

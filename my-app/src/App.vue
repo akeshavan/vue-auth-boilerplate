@@ -104,6 +104,11 @@ import giraffe from './assets/giraffe.svg';
 import elephant from './assets/elephant.svg';
 import narwhal from './assets/narwhal.svg';
 import monkey from './assets/monkey.svg';
+import jelly_grey from './assets/jelly_gray.svg';
+import giraffe_grey from './assets/giraffe_gray.svg';
+import elephant_grey from './assets/elephant_gray.svg';
+import narwhal_grey from './assets/narwhal_gray.svg';
+import monkey_grey from './assets/monkey_gray.svg';
 
 // explicit installation required in module environments
 Vue.use(VueFire);
@@ -123,6 +128,7 @@ export default {
           max: 100,
           character: null,
           img: null,
+          img_grey: null,
         },
         1: {
           level: 1,
@@ -130,6 +136,7 @@ export default {
           max: 750,
           character: 'jelly',
           img: jelly,
+          img_grey: jelly_grey,
         },
         2: {
           level: 2,
@@ -137,6 +144,7 @@ export default {
           max: 2000,
           character: 'giraffe',
           img: giraffe,
+          img_grey: giraffe_grey,
         },
         3: {
           level: 3,
@@ -144,6 +152,7 @@ export default {
           max: 3500,
           character: 'elephant',
           img: elephant,
+          img_grey: elephant_grey,
         },
         4: {
           level: 4,
@@ -151,6 +160,7 @@ export default {
           max: 6000,
           character: 'narwhal',
           img: narwhal,
+          img_grey: narwhal_grey,
         },
         5: {
           level: 5,
@@ -158,6 +168,7 @@ export default {
           max: 8000,
           character: 'monkey',
           img: monkey,
+          img_grey: monkey_grey,
         },
       },
     };
