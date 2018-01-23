@@ -173,7 +173,7 @@
   import _ from 'lodash';
   import { VueHammer } from 'vue2-hammer';
   import { db } from '../firebaseConfig';
-  window.db = db;
+
   Vue.use(VueHammer);
 
   Vue.use(require('vue-shortkey'));
@@ -233,11 +233,13 @@ function randomInt(min, max) {
       },
       swipeLeft() {
         console.log(this.currentCount['.key']);
-        const score = this.getScore(0);
-        this.showAlert();
-        this.sendVote(0);
-        this.setSwipe('swipe-left');
-        this.setCurrentImage();
+        this.getScore(0).then(() => {
+          this.showAlert();
+          this.sendVote(0).then(() => {
+            this.setSwipe('swipe-left');
+            this.setCurrentImage();
+          });
+        });
       },
       sendVote(vote) {
         db.ref('votes').push({
@@ -247,14 +249,7 @@ function randomInt(min, max) {
           image_id: this.currentCount['.key'],
         });
 
-        /* this.$firebaseRefs.images.child(this.images[this.index]['.key'])
-          .child('votes').push({
-            username: this.userInfo.displayName,
-            time: new Date() - this.startTime,
-            vote,
-          }); */
-
-        this.$firebaseRefs.imageCount
+        return this.$firebaseRefs.imageCount
           .child(this.currentCount['.key'])
           .child('num_votes')
           .set(this.currentCount.num_votes + 1);
@@ -305,7 +300,7 @@ function randomInt(min, max) {
         // get all scores for the images
         // then run computeScore to get the points
 
-        db.ref('votes')
+        return db.ref('votes')
           .orderByChild('image_id')
           .equalTo(this.currentCount['.key'])
           .once('value')
@@ -323,11 +318,13 @@ function randomInt(min, max) {
           });
       },
       swipeRight() {
-        const score = this.getScore(1);
-        this.showAlert();
-        this.sendVote(1);
-        this.setSwipe('swipe-right');
-        this.setCurrentImage();
+        this.getScore(1).then(() => {
+          this.showAlert();
+          this.sendVote(1).then(() => {
+            this.setSwipe('swipe-right');
+            this.setCurrentImage();
+          });
+        });
       },
       setSwipe(sw) {
         console.log('setting swipe', sw);

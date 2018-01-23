@@ -64,6 +64,11 @@
               <router-link to="/about" class="text-white">About</router-link>
             </td>
           </tr>
+          <tr>
+            <td class="align-middle text-center text-white">
+            icons on this site were <a href='https://www.freepik.com/free-vector/cute-woodland-animals_1585897.htm'>Designed by Freepik</a>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>

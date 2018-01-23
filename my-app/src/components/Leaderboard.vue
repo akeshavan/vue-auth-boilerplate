@@ -10,7 +10,6 @@
 </style>
 
 <script>
-  import { db } from '../firebaseConfig';
 
   export default {
     name: 'leaderboard',
