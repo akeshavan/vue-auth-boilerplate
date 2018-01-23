@@ -3,7 +3,9 @@
     <!-- Modal Component -->
     <b-modal id="levelUp" ref="levelUp" title="You've Levelled Up!" ok-only>
       <p class="my-4">
+        <h3>Level {{currentLevel.level}}</h3>
         <img :src="currentLevel.img" width="120px" height="120px"/>
+        <p class="lead">You've unlocked: {{currentLevel.character}}</p>
       </p>
     </b-modal>
 
@@ -193,6 +195,7 @@
   import imagesLoaded from 'vue-images-loaded';
   import GridLoader from 'vue-spinner/src/PulseLoader';
   import { db } from '../firebaseConfig';
+  import blank from '../assets/blank.svg';
 
   Vue.use(VueHammer);
 
@@ -220,7 +223,9 @@ function randomInt(min, max) {
     data() {
       return {
         // images: [],
-        currentImage: {},
+        currentImage: {
+          pic: 'data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==', // this is a blank gray base64
+        },
         currentIndex: null,
         imageCount: [],
         swipe: null,
@@ -232,7 +237,7 @@ function randomInt(min, max) {
           variant: 'warning',
           message: '',
         },
-        status: 'not_ready',
+        status: 'loading',
       };
     },
     computed: {
