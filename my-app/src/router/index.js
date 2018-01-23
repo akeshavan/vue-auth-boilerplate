@@ -17,6 +17,10 @@ import firebase from 'firebase';
 Vue.use(Router);
 
 const router = new Router({
+  scrollBehavior(to, from, savedPosition) {
+    // return desired position
+    return { x: 0, y: 0 };
+  },
   routes: [
     {
       path: '*', // redirect to login view
@@ -100,18 +104,22 @@ router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
   const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin);
 
+  if (requiresAuth && !currentUser) next('login');
   // make sure the user has take the tutorial
   if (to.name === 'Play') {
-    firebase.database().ref(`/users/${currentUser.displayName}`).once('value')
-      .then((snap) => {
-        const data = snap.val();
-        if (!data.taken_tutorial) {
-          next('tutorial');
-        }
-      });
+    if (currentUser) {
+      firebase.database().ref(`/users/${currentUser.displayName}`).once('value')
+        .then((snap) => {
+          const data = snap.val();
+          if (!data.taken_tutorial) {
+            next('tutorial');
+          }
+        });
+    } else {
+      next('login');
+    }
   }
 
-  if (requiresAuth && !currentUser) next('login');
   if (requiresAdmin) {
     console.log('requires admin');
     firebase.database().ref(`/settings/admins/${currentUser.displayName}`).once('value')
