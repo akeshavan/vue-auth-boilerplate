@@ -84,7 +84,9 @@
   </div>
 </template>
 <style>
-
+#signup {
+  min-height: 100vh;
+}
 </style>
 <script>
 

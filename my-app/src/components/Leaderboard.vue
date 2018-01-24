@@ -7,6 +7,9 @@
 </template>
 
 <style>
+#leaderboard {
+  min-height: 100vh;
+}
 </style>
 
 <script>

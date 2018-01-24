@@ -56,6 +56,11 @@
   height: 100px;
 }
 
+
+#about {
+  min-height: 100vh;
+}
+
 </style>
 
 <script>

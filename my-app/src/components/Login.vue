@@ -42,6 +42,9 @@
   </div>
 </template>
 <style>
+#login {
+  min-height: 100vh;
+}
 </style>
 <script>
 

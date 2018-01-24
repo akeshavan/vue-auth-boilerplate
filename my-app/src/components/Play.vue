@@ -9,7 +9,7 @@
       </p>
     </b-modal>
 
-    <div class="">
+    <div class="main">
       <transition :key="swipe" :name="swipe">
         <div class="user-card" :key="currentIndex">
             <div class="image_area"  v-images-loaded="loaded">
@@ -67,6 +67,11 @@
 
 <style>
   /*https://github.com/pudymody/tinderSwipe/blob/gh-pages/style.css*/
+
+  .main {
+    min-height: 100vh;
+  }
+  
   .user-card {
       max-width: 500px;
       height: fit-content;

@@ -50,6 +50,11 @@
   width: 100px;
   height: 100px;
 }
+
+#profile {
+  min-height: 100vh;
+}
+
 </style>
 
 <script>
