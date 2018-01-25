@@ -12,6 +12,7 @@ import Upload from '@/components/Upload';
 import Unauthorized from '@/components/Unauthorized';
 import Leaderboard from '@/components/Leaderboard';
 import Tutorial from '@/components/Tutorial';
+import Viz from '@/components/Viz';
 import firebase from 'firebase';
 
 Vue.use(Router);
@@ -95,6 +96,11 @@ const router = new Router({
       path: '/tutorial',
       name: 'Tutorial',
       component: Tutorial,
+    },
+    {
+      path: '/viz',
+      name: 'Viz',
+      component: Viz,
     },
   ],
 });

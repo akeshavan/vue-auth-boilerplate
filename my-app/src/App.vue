@@ -76,7 +76,14 @@
         <tbody>
           <tr>
             <td class="align-middle text-center text-white">
+
+            </td>
+          </tr>
+          <tr>
+            <td class="align-middle text-center text-white">
               <router-link to="/about" class="text-white">About</router-link>
+              <br>
+              <router-link to="/viz" class="text-white">Data Visualization </router-link>
             </td>
           </tr>
           <tr>

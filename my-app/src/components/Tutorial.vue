@@ -2,6 +2,37 @@
   <div class="tutorial">
     <div class="">
       <h1 v-if="!currentImage"> Tutorial</h1>
+      <div v-if="!currentImage">
+        <p>
+          Your objective is to classify these slices as "Pass" or "Fail" by swiping right or left
+        </p>
+
+        <p>
+          Any similarities to the Tinder dating app are completely coincidental
+        </p>
+
+        <p>
+          You get points for each image you rate.
+        </p>
+
+        <p>
+          You can unlock the following animals based on the number of points you have:
+        </p>
+
+        <b-container fluid class="p-4">
+          <b-row>
+            <b-col v-for="lev in levels" v-if="lev.img && lev.level <= 3">
+              <div>
+                <b-img fluid class="pokemon" :src="lev.img_grey" alt="Thumbnail"/>
+                <br>
+                Level {{lev.level}}
+                <br>
+                <span>{{lev.min}} points</span>
+              </div>
+            </b-col>
+          </b-row>
+        </b-container>
+      </div>
       <p class="lead">
         <span :class="{ '': this.currentType === null, 'text-danger': this.currentType === 0, 'text-success': this.currentType === 1 }">{{message}}</span>
       </p>
@@ -192,7 +223,7 @@ export default {
     },
     message() {
       if (this.currentType === null) {
-        return 'Your goal is to rate brain images for their quality';
+        return 'Ready to train?';
       } else if (this.currentType === 1) {
         return 'Swipe Right to Pass this image';
       }
@@ -201,6 +232,7 @@ export default {
     },
   },
   components: { VueHammer },
+  props: ['levels'],
   watch: {
     count() {
       if (this.count === 5) {

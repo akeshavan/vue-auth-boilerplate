@@ -183,7 +183,7 @@
 
   .toast {
     width: auto;
-    max-width: 300px;
+    max-width: 100px;
     top: 60px;
     left: 0;
     margin: auto;
@@ -322,7 +322,7 @@ function randomInt(min, max) {
 
         if (size <= 5) {
           // not enough votes to say.
-          this.score.message = 'too few votes, you get a point!';
+          this.score.message = '+ 1';
           this.score.variant = 'success';
           return { score: 1, ave: newAve, size: size + 1 };
         }
@@ -330,22 +330,22 @@ function randomInt(min, max) {
         if (aveVote <= 0.3 || aveVote >= 0.7) {
           // the group feels strongly. Do you agree w/ them?
           if (aveVote <= 0.3 && !vote) {
-            this.score.message = 'you agree w/ group: 0';
+            this.score.message = '+ 1';
             this.score.variant = 'success';
             return { score: 1, ave: newAve, size: size + 1 };
           } else if (aveVote >= 0.7 && vote) {
-            this.score.message = 'you agree w/ group: 1';
+            this.score.message = '+ 1';
             this.score.variant = 'success';
             return { score: 1, ave: newAve, size: size + 1 };
           }
 
           // you disagree w/ the majority. You are penalized
-          this.score.message = 'you disagree w/ the majority. You are penalized';
+          this.score.message = '+ 0';
           this.score.variant = 'danger';
           return { score: 0, ave: newAve, size: size + 1 };
         }
 
-        this.score.message = 'group is undecided, you get a point';
+        this.score.message = '+ 1';
         this.score.variant = 'success';
         return { score: 1, ave: newAve, size: size + 1 };
       },
