@@ -71,7 +71,7 @@
   .main {
     min-height: 100vh;
   }
-  
+
   .user-card {
       max-width: 500px;
       height: fit-content;
@@ -215,7 +215,7 @@ function randomInt(min, max) {
     firebase: {
       // images: db.ref('images'),
       imageCount: {
-        source: db.ref('imageCount'),
+        source: db.ref('imageCount').orderByChild('num_votes'),
         readyCallback() {
           console.log('is ready', this.imageCount);
           this.status = 'loading';
@@ -271,7 +271,9 @@ function randomInt(min, max) {
         this.status = 'ready';
       },
       setCurrentImage() {
-        const N = this.imageCount.length;
+        const fdata = _.filter(this.imageCount,
+          val => val.num_votes === this.imageCount[0].num_votes);
+        const N = fdata.length;
         this.currentIndex = randomInt(0, N - 1);
         const key = this.currentCount['.key'];
         console.log('key is', key);
