@@ -117,6 +117,7 @@ import giraffe_grey from './assets/giraffe_gray.svg';
 import elephant_grey from './assets/elephant_gray.svg';
 import narwhal_grey from './assets/narwhal_gray.svg';
 import monkey_grey from './assets/monkey_gray.svg';
+import '../node_modules/font-awesome/css/font-awesome.min.css';
 
 // explicit installation required in module environments
 Vue.use(VueFire);

@@ -52,14 +52,14 @@
               v-shortkey="['arrowleft']"
               @shortkey="swipeLeft"
               v-hammer:swipe.left="swipeLeft"
-            > Fail </b-button>
+            > <i class="fa fa-long-arrow-left" aria-hidden="true"></i>  Fail </b-button>
             <span class="align-middle">Fail or Pass</span>
             <b-button variant="success"
               style="float:right"
               @click="swipeRight"
               v-shortkey="['arrowright']"
               @shortkey="swipeRight"
-            > Pass </b-button>
+            > Pass <i class="fa fa-long-arrow-right" aria-hidden="true"></i> </b-button>
           </div>
         </div>
       </transition>
@@ -225,10 +225,10 @@ export default {
       if (this.currentType === null) {
         return 'Ready to train?';
       } else if (this.currentType === 1) {
-        return 'Swipe Right to Pass this image';
+        return 'Swipe Right (or press right arrow) to Pass this image';
       }
 
-      return 'Swipe Left to Fail this image';
+      return 'Swipe Left (or press left arrow) to Fail this image';
     },
   },
   components: { VueHammer },

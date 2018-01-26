@@ -10,16 +10,18 @@
     </b-modal>
 
     <div class="main">
-      <transition :key="swipe" :name="swipe">
+      <transition :key="swipe" :name="swipe" >
         <div class="user-card" :key="currentIndex">
-            <div class="image_area"  v-images-loaded="loaded">
+            <div class="image_area">
               <div v-if="status == 'loading'">
                 <grid-loader class="loader" color="#ffc107"></grid-loader>
               </div>
-              <img class="user-card__picture mx-auto" :src="currentImage.pic"
+              <progressive-img class="user-card__picture mx-auto" :src="currentImage"
               v-hammer:swipe.horizontal="onSwipe"
+              placeholder="https://unsplash.it/500"
+              :aspect-ratio="1"
               >
-              </img>
+              </progressive-img>
             </div>
           <div class="user-card__name">
             <b-button variant="danger"
@@ -28,14 +30,14 @@
               v-shortkey="['arrowleft']"
               @shortkey="swipeLeft"
               v-hammer:swipe.left="swipeLeft"
-            > Fail </b-button>
+            > <i class="fa fa-long-arrow-left" aria-hidden="true"></i> Fail </b-button>
             <span class="align-middle">Fail or Pass</span>
             <b-button variant="success"
               style="float:right"
               @click="swipeRight"
               v-shortkey="['arrowright']"
               @shortkey="swipeRight"
-            > Pass </b-button>
+            > Pass <i class="fa fa-long-arrow-right" aria-hidden="true"></i>  </b-button>
           </div>
         </div>
         <!--<b-card :img-src="images[index].pic"
@@ -100,6 +102,7 @@
     top: 50%;
     left: 50%;
     transform: translateX(-50%);
+    z-index: 9;
   }
 
   .user-card__name {
@@ -151,13 +154,13 @@
 
   /* Enter and leave animations can use different */
   /* durations and timing functions.              */
-  .swipe-right-enter-active {
+  /*.swipe-right-enter-active {
     transition: all .3s ease;
   }
 
   .swipe-right-enter-to {
     transition: all .3s ease;
-  }
+  }*/
 
   .swipe-right-leave-active {
     transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
@@ -168,9 +171,9 @@
             transform: rotate(13deg) translate3d(100%, 0, 0);
     opacity: 0;
   }
-  .swipe-left-enter-active {
+  /*.swipe-left-enter-active {
     transition: all .3s ease;
-  }
+  }*/
   .swipe-left-leave-active {
     transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
   }
@@ -200,7 +203,9 @@
   import imagesLoaded from 'vue-images-loaded';
   import GridLoader from 'vue-spinner/src/PulseLoader';
   import { db } from '../firebaseConfig';
+  import VueProgressiveImage from '../../node_modules/vue-progressive-image/dist/vue-progressive-image';
 
+  Vue.use(VueProgressiveImage);
   Vue.use(VueHammer);
 
   Vue.use(require('vue-shortkey'));
@@ -267,10 +272,6 @@ function randomInt(min, max) {
       imagesLoaded,
     },
     methods: {
-      loaded() {
-        console.log('image loaded');
-        this.status = 'ready';
-      },
       setCurrentImage() {
         const fdata = _.filter(this.imageCount,
           val => val.num_votes === this.imageCount[0].num_votes);
@@ -284,10 +285,13 @@ function randomInt(min, max) {
           this.prevImage = key;
         }
         console.log('key is', key);
-        db.ref('images').child(key).once('value').then((snap) => {
+        /*db.ref('images').child(key).once('value').then((snap) => {
           this.currentImage = snap.val();
           this.startTime = new Date();
-        });
+        });*/
+        this.currentImage = `https://dxugxjm290185.cloudfront.net/braindr/${key}.jpg`;
+        console.log(this.currentImage);
+        this.status = "ready";
       },
       swipeLeft() {
         console.log(this.currentCount['.key']);
