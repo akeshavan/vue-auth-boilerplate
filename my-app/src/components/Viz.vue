@@ -5,26 +5,49 @@
       <div>
         <p class="lead"> Realtime updating charts describing the data collected on braindr. </p>
       </div>
+      <div class="stats">
+        <b-container>
+        <b-row>
+          <b-col>
+            <h1> {{allUsers.length}} </h1>
+            <p class="text-muted">  # users </p>
+          </b-col>
+        <b-col>
+          <h1>{{sumCounts}}</h1>
+          <p class="text-muted"> # ratings </p>
+        </b-col>
+      </b-row>
+        </b-container>
+
+      </div>
+
        <hr>
       <h2> Number of votes per image </h2>
       <p class="lead">
         We want every image to have been rated at least 5 times
       </p>
-      <p>
-        Click on a bar of the histogram to look at the pass/fail distribution of votes
-      </p>
-
+      <span v-if="this.status != 'ready'">{{status}}</span>
       <div v-for="(bin, index) in makeHist" class="line">
-        <span class="label"> {{index}} </span>
+        <span class="label x"> {{index}} </span>
         <div class="bar" :style="bin" @click="plotDist(bin)">
-          {{bin.text}}
+
         </div>
+        <span class="label y">{{bin.text}}</span>
       </div>
       <hr>
       <h2> Average vote distribution </h2>
       <p class="lead">
         Some images clearly pass or fail QC, but some are in between.
       </p>
+      <span v-if="this.status != 'ready'">{{status}}</span>
+      <div v-for="(bin, index) in histData" class="line">
+        <span class="label x"> {{bin.x0 | formatNumber }} - {{bin.x1 | formatNumber }} </span>
+        <div class="bar" :style="bin">
+
+        </div>
+        <span class="label y">{{bin.value}}</span>
+      </div>
+      <hr>
 
 
 
@@ -33,31 +56,56 @@
 </template>
 
 <style>
+
+.stats {
+  margin-top: 2em;
+  display: inline-flex;
+}
+
+.stat {
+    font-size: 2em;
+    margin-right: 3em;
+    margin-left: 3em;
+}
+
 .bar {
   background-color: steelblue;
   color: white;
   margin: 5px;
   text-align: right;
+  height: 20px;
 }
 
 .bar:hover{
   background-color: #ecb058;
-  cursor: pointer;
 }
 
 .line {
   display: flex;
 }
 
+.x {
+  color: grey;
+}
+
+
 .barplot {
 
+}
+
+hr {
+  margin: 40px;
 }
 </style>
 
 <script>
 import _ from 'lodash';
-const lm = require('lomath');
+const d3 = require('d3-array');
+import numeral from 'numeral';
+import Vue from 'vue';
 import { db } from '../firebaseConfig';
+
+Vue.filter('formatNumber', value => numeral(value).format('0.0[0]'));
 
 export default {
   name: 'viz',
@@ -66,13 +114,22 @@ export default {
       source: db.ref('imageCount').orderByChild('num_votes'),
       readyCallback() {
         console.log(this.imageCount);
+        this.status = 'ready'
+        this.plotDist();
       },
     },
   },
   data() {
     return {
       ready: false,
+      histData: [],
+      status: 'Loading',
     };
+  },
+  components: {  },
+  props: ['allUsers'],
+  created(){
+    this.status = 'Loading..';
   },
   computed: {
     makeHist() {
@@ -85,20 +142,38 @@ export default {
         });
         const m = _.max(vals) * 1.1;
         const bins =   _.mapValues(data, (v) => {
-          return { width: v.length/m * w +'px', text: v.length };
+          return { width: v.length/m * w +'px', text: v.length};
         });
+        this.plotDist();
+        //this.status = 'ready';
         return bins;
       }
     },
+    sumCounts() {
+      const data = _.map(this.imageCount, v =>  v.num_votes);
+      return _.sum(data);
+    }
   },
   methods: {
     plotDist(bin) {
+
       if (!bin) {
         // plot the full distribution
-
-
+        const histogram = d3.histogram()
+                       .thresholds(10)
+                       .value(d => d.ave_score);
+        const histogramData = histogram(this.imageCount);
+        const w = document.getElementsByClassName('barplot')[0].clientWidth || 100;
+        //console.log('hist data', histogramData);
+        const vals = _.map(histogramData, v => v.length - 2);
+        const m = _.max(vals) * 1.1;
+        const data = _.mapValues(histogramData, (v) => {
+          return { width: (v.length - 2)/m * w + 'px', value: v.length - 2, x0: v.x0, x1: v.x1 }
+        });
+        //console.log(data);
+        this.histData = data;
       } else {
-
+        //console.log('bin is', bin);
       }
     },
   },
