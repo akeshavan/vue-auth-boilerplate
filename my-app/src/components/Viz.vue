@@ -41,7 +41,7 @@
       </p>
       <span v-if="this.status != 'ready'">{{status}}</span>
       <div v-for="(bin, index) in histData" class="line">
-        <span class="label x"> {{bin.x0 | formatNumber }} - {{bin.x1 | formatNumber }} </span>
+        <span class="label x wide"> {{bin.x0 | formatNumber }} - {{bin.x1 | formatNumber }} </span>
         <div class="bar" :style="bin">
 
         </div>
@@ -86,6 +86,11 @@
 
 .x {
   color: grey;
+  min-width: 20px;
+}
+
+.wide {
+  min-width: 60px;
 }
 
 
@@ -113,7 +118,7 @@ export default {
     imageCount: {
       source: db.ref('imageCount').orderByChild('num_votes'),
       readyCallback() {
-        console.log(this.imageCount);
+        // console.log(this.imageCount);
         this.status = 'ready'
         this.plotDist();
       },
@@ -133,7 +138,7 @@ export default {
   },
   computed: {
     makeHist() {
-      if (this.ready){
+      if (this.ready && document.getElementsByClassName('barplot')[0]) {
         const data = _.groupBy(this.imageCount, 'num_votes');
         const w = document.getElementsByClassName('barplot')[0].clientWidth || 100;
         const vals = [];
@@ -145,7 +150,7 @@ export default {
           return { width: v.length/m * w +'px', text: v.length};
         });
         this.plotDist();
-        //this.status = 'ready';
+        this.status = 'ready';
         return bins;
       }
     },

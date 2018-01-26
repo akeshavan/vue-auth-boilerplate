@@ -215,7 +215,7 @@ function randomInt(min, max) {
     firebase: {
       // images: db.ref('images'),
       imageCount: {
-        source: db.ref('imageCount').orderByChild('num_votes'),
+        source: db.ref('imageCount').orderByChild('num_votes').limitToFirst(50),
         readyCallback() {
           console.log('is ready', this.imageCount);
           this.status = 'loading';
@@ -230,6 +230,7 @@ function randomInt(min, max) {
         currentImage: {
           pic: 'data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==', // this is a blank gray base64
         },
+        prevImage: null,
         currentIndex: null,
         imageCount: [],
         swipe: null,
@@ -275,7 +276,13 @@ function randomInt(min, max) {
           val => val.num_votes === this.imageCount[0].num_votes);
         const N = fdata.length;
         this.currentIndex = randomInt(0, N - 1);
-        const key = this.currentCount['.key'];
+        let key = this.currentCount['.key'];
+        if (key === this.prevImage) {
+          this.currentIndex += 1;
+          key = this.currentCount['.key'];
+        } else {
+          this.prevImage = key;
+        }
         console.log('key is', key);
         db.ref('images').child(key).once('value').then((snap) => {
           this.currentImage = snap.val();
