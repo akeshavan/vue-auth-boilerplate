@@ -333,6 +333,7 @@ function randomInt(min, max) {
         this.status = 'loading';
         this.setSwipe('swipe-left');
         const score = this.getUntrustedScore(this.currentCount, 0);
+        this.showAlert();
         // set the user score
         db.ref('users').child(this.userInfo.displayName)
           .child('score').set(this.userData.score + score.score);
@@ -433,6 +434,7 @@ function randomInt(min, max) {
         this.status = 'loading';
         this.setSwipe('swipe-right');
         const score = this.getUntrustedScore(this.currentCount, 1);
+        this.showAlert();
         // set the user score
         db.ref('users').child(this.userInfo.displayName)
           .child('score').set(this.userData.score + score.score);
