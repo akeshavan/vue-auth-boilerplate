@@ -293,16 +293,61 @@ function randomInt(min, max) {
         console.log(this.currentImage);
         this.status = "ready";
       },
+      getUntrustedScore(data, vote) {
+        const size = data.num_votes;
+        const aveVote = data.ave_score;
+        const newAve = ((aveVote * size) + vote) / (size + 1);
+        console.log('size, preave, newave', size, aveVote, newAve, vote);
+
+        if (size <= 5) {
+          // not enough votes to say.
+          this.score.message = '+ 1';
+          this.score.variant = 'success';
+          return { score: 1, ave: newAve, size: size + 1 };
+        }
+
+        if (aveVote <= 0.3 || aveVote >= 0.7) {
+          // the group feels strongly. Do you agree w/ them?
+          if (aveVote <= 0.3 && !vote) {
+            this.score.message = '+ 1';
+            this.score.variant = 'success';
+            return { score: 1, ave: newAve, size: size + 1 };
+          } else if (aveVote >= 0.7 && vote) {
+            this.score.message = '+ 1';
+            this.score.variant = 'success';
+            return { score: 1, ave: newAve, size: size + 1 };
+          }
+
+          // you disagree w/ the majority. You are penalized
+          this.score.message = '+ 0';
+          this.score.variant = 'danger';
+          return { score: 0, ave: newAve, size: size + 1 };
+        }
+
+        this.score.message = '+ 1';
+        this.score.variant = 'success';
+        return { score: 1, ave: newAve, size: size + 1 };
+      },
       swipeLeft() {
         console.log(this.currentCount['.key']);
         this.status = 'loading';
-        this.getScore(0).then(() => {
-          this.showAlert();
-          this.sendVote(0).then(() => {
-            this.setSwipe('swipe-left');
-            this.setCurrentImage();
-          });
-        });
+        this.setSwipe('swipe-left');
+        const score = this.getUntrustedScore(this.currentCount, 0);
+        // set the user score
+        db.ref('users').child(this.userInfo.displayName)
+          .child('score').set(this.userData.score + score.score);
+        // set the image count
+        this.$firebaseRefs.imageCount
+            .child(this.currentCount['.key'])
+            .set({
+              ave_score: score.ave,
+              num_votes: score.size,
+            });
+        // send the actual vote
+        this.sendVote(0);
+
+        this.setCurrentImage();
+
       },
       sendVote(vote) {
         return db.ref('votes').push({
@@ -386,13 +431,22 @@ function randomInt(min, max) {
       },
       swipeRight() {
         this.status = 'loading';
-        this.getScore(1).then(() => {
-          this.showAlert();
-          this.sendVote(1).then(() => {
-            this.setSwipe('swipe-right');
-            this.setCurrentImage();
-          });
-        });
+        this.setSwipe('swipe-right');
+        const score = this.getUntrustedScore(this.currentCount, 1);
+        // set the user score
+        db.ref('users').child(this.userInfo.displayName)
+          .child('score').set(this.userData.score + score.score);
+        // set the image count
+        this.$firebaseRefs.imageCount
+            .child(this.currentCount['.key'])
+            .set({
+              ave_score: score.ave,
+              num_votes: score.size,
+            });
+
+        this.sendVote(1);
+
+        this.setCurrentImage();
       },
       setSwipe(sw) {
         console.log('setting swipe', sw);
