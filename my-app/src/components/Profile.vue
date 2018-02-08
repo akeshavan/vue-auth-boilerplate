@@ -38,6 +38,16 @@
         </b-row>
       </b-container>
 
+      <b-container>
+        <select v-model="selectedTheme" v-on:change="setTheme">
+          <option v-for="(href, name) of themes" v-bind:value="name">
+            {{ name }}
+          </option>
+        </select>
+        <span>Selected: {{ selectedTheme }}</span>
+
+      </b-container>
+
     </b-container>
 
   </div>
@@ -62,10 +72,15 @@ export default {
   name: 'profile',
   data() {
     return {
-
+      selectedTheme: null,
     };
   },
   // the parent component feeds these vars to this component
-  props: ['userInfo', 'userData', 'levels', 'currentLevel'],
+  props: ['userInfo', 'userData', 'levels', 'currentLevel', 'themes'],
+  methods: {
+    setTheme() {
+      this.$emit('theme', this.selectedTheme);
+    },
+  },
 };
 </script>

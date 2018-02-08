@@ -68,6 +68,8 @@
                    :levels="levels"
                    :currentLevel="currentLevel"
                    v-on:taken_tutorial="setTutorial"
+                   :themes="themes"
+                   v-on:theme="switchTheme"
                    />
     </div>
   </div>
@@ -123,6 +125,39 @@ import '../node_modules/font-awesome/css/font-awesome.min.css';
 Vue.use(VueFire);
 Vue.use(BootstrapVue);
 
+const ThemeHelper = function(){
+
+  const preloadTheme = (href) => {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    document.head.appendChild(link);
+
+    return new Promise((resolve, reject) => {
+      link.onload = (e) => {
+        const sheet = e.target.sheet;
+        sheet.disabled = true;
+        resolve(sheet);
+      };
+      link.onerror = reject;
+    });
+  };
+
+  const selectTheme = (themes, name) => {
+    /*if (name && !themes[name]) {
+      throw new Error(`"${name}" has not been defined as a theme.`);
+    }*/
+    Object.keys(themes).forEach(n => themes[n].disabled = (n !== name));
+  }
+
+  const themes = {};
+
+  return {
+    add(name, href) { return preloadTheme(href).then(s => themes[name] = s); },
+    set theme(name) { selectTheme(themes, name); },
+    get theme() { return Object.keys(themes).find(n => !themes[n].disabled); }
+  };
+};
 
 export default {
   name: 'app',
@@ -130,6 +165,14 @@ export default {
     return {
       userInfo: {},
       allUsers: [],
+      themes: {
+        default: '',
+        flatly: 'https://bootswatch.com/4/flatly/bootstrap.min.css',
+        materia: 'https://bootswatch.com/4/materia/bootstrap.min.css',
+        solar: 'https://bootswatch.com/4/solar/bootstrap.min.css',
+        darkly: 'https://bootswatch.com/4/darkly/bootstrap.min.css',
+      },
+      themeHelper: new ThemeHelper(),
       levels: {
         0: {
           level: 0,
@@ -183,6 +226,19 @@ export default {
     };
   },
 
+  mounted() {
+    const added = Object.keys(this.themes).map(name => {
+      return this.themeHelper.add(name, this.themes[name]);
+    });
+    console.log('added?', added);
+
+    Promise.all(added).then(sheets => {
+      console.log(`${sheets.length} themes loaded`);
+      this.loading = false;
+      this.themeHelper.theme = 'default';
+    });
+  },
+
   firebase: {
     allUsers: db.ref('/users/'),
   },
@@ -213,6 +269,9 @@ export default {
     },
   },
   methods: {
+    switchTheme(theme) {
+      this.themeHelper.theme = theme;
+    },
     logout() {
       firebase.auth().signOut().then(() => {
         this.userInfo = null;
@@ -269,7 +328,7 @@ export default {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
-    color: #2c3e50;
+    /*color: #2c3e50;*/
   }
 
   .router {

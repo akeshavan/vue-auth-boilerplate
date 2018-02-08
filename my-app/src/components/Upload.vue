@@ -45,6 +45,13 @@
       </div>
     </div>
     <hr>
+    <input type="text" v-model="keyToUpdate"/>
+    <button type="button" class="btn btn-success" @click="updateAllScores">
+      <i class="fa fa-arrow-up" aria-hidden="true"></i>
+      Update scores
+    </button>
+
+    <hr>
     <b-container class="mt-3">
       <h2>
         All images: {{imageCount.length}}
@@ -110,6 +117,7 @@
 <script>
 import Vue from 'vue';
 import FileUpload from 'vue-upload-component';
+import _ from 'lodash';
 import { db } from '../firebaseConfig';
 
 
@@ -136,11 +144,14 @@ export default {
       files: [],
       images: [],
       imageCount: [],
+      keyToUpdate: '',
+      votes: [],
     };
   },
   firebase: {
-    images: db.ref('images').limitToLast(25),
+    images: db.ref('images').limitToLast(5),
     imageCount: db.ref('imageCount'),
+    // votes: db.ref('votes'),
   },
   methods: {
     inputFilter(newFile, oldFile, prevent) {
@@ -157,6 +168,10 @@ export default {
           return prevent();
         }
       }
+    },
+
+    doVotes(){
+      console.log(this.votes);
     },
 
     inputFile(newFile, oldFile) {
@@ -204,6 +219,58 @@ export default {
       reader.onerror = function (error) {
         console.log('Error: ', error);
       };
+    },
+    computeScore(data) {
+      let voteScore = 0;
+      let size = 0;
+
+      _.mapValues(data, (v) => {
+        voteScore += v.vote;
+        size += 1;
+        return v.vote;
+      });
+
+      const aveVote = voteScore / size;
+      return { aveVote , size };
+    },
+
+    updateAllScores() {
+      const data = _.map(this.imageCount, (v) => {return v['.key']});
+      const N = data.length;
+      console.log(N);
+      const self = this;
+      (function theLoop (i) {
+        setTimeout(function () {
+          console.log('updating', data[i])
+          self.updateScores(data[i]);
+          if (--i) {          // If i > 0, keep going
+            theLoop(i);       // Call the loop again, and pass it the current value of i
+          }
+        }, 3000);
+      })(3608);
+
+    },
+
+    updateScores(key) {
+      // get all scores for the images
+      // then run computeScore to get the points
+      console.log('trying ', key);
+      return db.ref('votes')
+        .orderByChild('image_id')
+        .equalTo(key)
+        .once('value')
+        .then((snap) => {
+          const data = snap.val();
+          console.log('snap data is', data);
+          const score = this.computeScore(data);
+          console.log('score for', key, 'is', score);
+          this.$firebaseRefs.imageCount
+              .child(key)
+              .set({
+                ave_score: score.aveVote,
+                num_votes: score.size,
+              });
+        });
     },
 
   },

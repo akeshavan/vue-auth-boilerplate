@@ -3,7 +3,7 @@
     <h1> Data Visualization </h1>
     <div class="container barplot">
       <div>
-        <p class="lead"> Realtime updating charts describing the data collected on braindr. </p>
+        <p class="lead"> Charts describing the data collected on braindr. </p>
       </div>
       <div class="stats">
         <b-container>
@@ -115,19 +115,20 @@ Vue.filter('formatNumber', value => numeral(value).format('0.0[0]'));
 export default {
   name: 'viz',
   firebase: {
-    imageCount: {
+    /*imageCount: {
       source: db.ref('imageCount').orderByChild('num_votes'),
       readyCallback() {
         // console.log(this.imageCount);
         this.status = 'ready'
         this.plotDist();
       },
-    },
+    },*/
   },
   data() {
     return {
       ready: false,
       histData: [],
+      imageCount: [],
       status: 'Loading',
     };
   },
@@ -135,6 +136,12 @@ export default {
   props: ['allUsers'],
   created(){
     this.status = 'Loading..';
+    db.ref('imageCount').orderByChild('num_votes')
+      .once('value').then((snap) => {
+        this.imageCount = snap.val();
+        this.status = 'ready';
+        this.plotDist();
+      });
   },
   computed: {
     makeHist() {

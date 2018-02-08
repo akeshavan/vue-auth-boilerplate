@@ -210,9 +210,9 @@
 
   Vue.use(require('vue-shortkey'));
 
-function randomInt(min, max) {
+  function randomInt(min, max) {
     return Math.floor(Math.random() * ((max - min) + 1)) + min;
-}
+  }
 
 
   export default {
@@ -220,10 +220,14 @@ function randomInt(min, max) {
     firebase: {
       // images: db.ref('images'),
       imageCount: {
-        source: db.ref('imageCount').orderByChild('num_votes').limitToFirst(50),
+        source: db.ref('imageCount').orderByChild('num_votes').limitToFirst(30),
         readyCallback() {
           console.log('is ready', this.imageCount);
           this.status = 'loading';
+          /*_.map(this.imageCount, (v) => {
+            this.preloadImage(v['.key']);
+            console.log('preloaded', v['.key']);
+          });*/
           this.setCurrentImage();
         },
       },
@@ -236,8 +240,10 @@ function randomInt(min, max) {
           pic: 'data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==', // this is a blank gray base64
         },
         prevImage: null,
+        imageBaseUrl: 'https://dxugxjm290185.cloudfront.net/braindr',
         currentIndex: null,
         imageCount: [],
+        preloaded: null,
         swipe: null,
         startTime: null,
         dismissSecs: 1,
@@ -263,6 +269,12 @@ function randomInt(min, max) {
           db.ref(`/users/${this.userInfo.displayName}`).child('level').set(this.currentLevel.level);
         }
       },
+      imageCount() {
+        /*_.map(this.imageCount, (v) => {
+          this.preloadImage(v['.key']);
+          // console.log('preloaded', v['.key']);
+        });*/
+      },
     },
     mounted() {
       this.startTime = new Date();
@@ -272,6 +284,10 @@ function randomInt(min, max) {
       imagesLoaded,
     },
     methods: {
+      preloadImage(img) {
+        this.preloaded = new Image();
+        this.preloaded.src = `${this.imageBaseUrl}/${img}.jpg`;
+      },
       setCurrentImage() {
         const fdata = _.filter(this.imageCount,
           val => val.num_votes === this.imageCount[0].num_votes);
@@ -289,7 +305,7 @@ function randomInt(min, max) {
           this.currentImage = snap.val();
           this.startTime = new Date();
         });*/
-        this.currentImage = `https://dxugxjm290185.cloudfront.net/braindr/${key}.jpg`;
+        this.currentImage = `${this.imageBaseUrl}/${key}.jpg`;
         console.log(this.currentImage);
         this.status = "ready";
       },
