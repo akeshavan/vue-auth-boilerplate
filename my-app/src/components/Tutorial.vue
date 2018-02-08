@@ -2,6 +2,14 @@
   <div class="tutorial">
     <div class="">
       <h1 v-if="!currentImage"> Tutorial</h1>
+
+      <b-modal id="tutDone" ref="tutDone" title="You're Ready" ok-only ok-title="Keep practicing" ok-variant="secondary">
+        <p class="my-4">
+          <h4> Lets Go!  </h4>
+            <b-button to="/play" class="mb-3" variant="primary" size="lg">Start Playing</b-button>
+        </p>
+      </b-modal>
+
       <div v-if="!currentImage">
         <p>
           Your objective is to classify these slices as "Pass" or "Fail" by swiping right or left
@@ -38,6 +46,9 @@
       </p>
       <b-button @click="setImage(1)" v-if="!currentImage" variant="primary">Start</b-button>
       <b-button to="/play" v-if="count >= 5" class="mb-3" variant="primary">Start Playing</b-button>
+
+
+
       <transition :key="swipe" :name="swipe">
         <div class="user-card" :key="currentType" v-if="currentImage">
             <div class="image_area">
@@ -237,6 +248,7 @@ export default {
     count() {
       if (this.count === 5) {
         this.$emit('taken_tutorial', true);
+        this.$refs.tutDone.show()
       }
     },
   },
