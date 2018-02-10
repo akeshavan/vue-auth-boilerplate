@@ -239,7 +239,7 @@ export default {
   },
 
   firebase: {
-    allUsers: db.ref('/users/').orderByChild('score').limitToLast(100),
+    allUsers: db.ref('/users/').orderByChild('score'),
   },
 
   computed: {

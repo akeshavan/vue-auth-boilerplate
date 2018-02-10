@@ -115,14 +115,14 @@ Vue.filter('formatNumber', value => numeral(value).format('0.0[0]'));
 export default {
   name: 'viz',
   firebase: {
-    /*imageCount: {
+    imageCount: {
       source: db.ref('imageCount').orderByChild('num_votes'),
       readyCallback() {
         // console.log(this.imageCount);
-        this.status = 'ready'
+        this.status = 'ready';
         this.plotDist();
       },
-    },*/
+    },
   },
   data() {
     return {
@@ -136,12 +136,12 @@ export default {
   props: ['allUsers'],
   created(){
     this.status = 'Loading..';
-    db.ref('imageCount').orderByChild('num_votes')
+    /* db.ref('imageCount').orderByChild('num_votes')
       .once('value').then((snap) => {
         this.imageCount = snap.val();
         this.status = 'ready';
         this.plotDist();
-      });
+      }); */
   },
   computed: {
     makeHist() {
