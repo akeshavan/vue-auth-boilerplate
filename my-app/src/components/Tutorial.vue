@@ -10,7 +10,7 @@
         </p>
       </b-modal>
 
-      <div v-if="!currentImage">
+      <div v-if="!currentImage && stage==0">
         <p>
           Your objective is to classify these slices as "Pass" or "Fail" by swiping right or left
         </p>
@@ -41,10 +41,62 @@
           </b-row>
         </b-container>
       </div>
+
+      <div v-if="!currentImage && stage==1">
+
+        <p class="lead">
+          There are two types of brain tissue: Gray matter and White matter:
+        </p>
+
+        <div class="user-card unstack">
+            <div class="image_area">
+              <img class="user-card__picture mx-auto" src="../assets/braindrIntro.png">
+            </div>
+          <div class="user-card__name">
+            Gray and White matter
+          </div>
+        </div>
+
+        <p class="lead">
+          In a passing image, you can clearly see the two tissue types:
+        </p>
+
+        <div class="user-card unstack">
+            <div class="image_area">
+              <img class="user-card__picture mx-auto" src="../assets/braindrPass.png">
+            </div>
+          <div class="user-card__name">
+            Example of a passing image
+          </div>
+        </div>
+
+        <p class="lead">
+          In a failing image, you cannot distinguish the tissue types.
+          <br>
+          It looks like there are "bands" or blurriness:
+        </p>
+
+        <div class="user-card unstack">
+            <div class="image_area">
+              <img class="user-card__picture mx-auto" src="../assets/braindrFail.png">
+            </div>
+          <div class="user-card__name">
+            A failing image has motion "bands" or is blurry
+          </div>
+        </div>
+
+        <p class="lead">
+          Your task is to swipe to rate the images.
+        </p>
+
+
+      </div>
+
       <p class="lead">
         <span :class="{ '': this.currentType === null, 'text-danger': this.currentType === 0, 'text-success': this.currentType === 1 }">{{message}}</span>
       </p>
-      <b-button @click="setImage(1)" v-if="!currentImage" variant="primary">Start</b-button>
+      <b-button @click="incrementStage(1)" v-if="!currentImage && stage==0" variant="primary">Next</b-button>
+      <b-button @click="setImage(1)" v-if="!currentImage && stage==1" variant="primary" class="mb-3">Start</b-button>
       <b-button to="/play" v-if="count >= 5" class="mb-3" variant="primary">Start Playing</b-button>
 
 
@@ -93,6 +145,11 @@
     left: 0;
     right: 0;
     margin: auto
+}
+
+.unstack {
+  position: relative !important;
+  margin-bottom: 10px;
 }
 
 .user-card__picture {
@@ -213,7 +270,7 @@ Vue.use(VueHammer);
 export default {
   name: 'tutorial',
   firebase: {
-    imgCounts: db.ref('imageCount').orderByChild('num_votes').startAt(1).limitToFirst(50),
+    imgCounts: db.ref('imageCount').orderByChild('adminVote').startAt(null)//.limitToFirst(50),
   },
   data() {
     return {
@@ -223,14 +280,15 @@ export default {
       startTime: 0,
       swipe: null,
       count: 0,
+      stage: 0,
     };
   },
   computed: {
     passes() {
-      return _.filter(this.imgCounts, val => val.ave_score > 0.7);
+      return _.filter(this.imgCounts, val => val.adminVote === 1);
     },
     fails() {
-      return _.filter(this.imgCounts, val => val.ave_score < 0.3);
+      return _.filter(this.imgCounts, val => val.adminVote === 0);
     },
     message() {
       if (this.currentType === null) {
@@ -253,6 +311,9 @@ export default {
     },
   },
   methods: {
+    incrementStage(v) {
+      this.stage = v;
+    },
     swipeLeft() {
       if (this.currentType === 0) {
         this.setSwipe('swipe-left');
@@ -272,16 +333,21 @@ export default {
       }
     },
     setImage(type) {
+      window.scrollTo(0,0)
       let img = null;
+      console.log('this passes', this.passes, this.fails)
       if (type) {
         const N = this.passes.length;
         const rando = randomInt(0, N - 1);
         img = this.passes[rando];
+        console.log('here', type, img);
       } else {
         const N = this.fails.length;
         const rando = randomInt(0, N - 1);
         img = this.fails[rando];
+        console.log('here', type, img);
       }
+      console.log('img is', img);
       db.ref('images').child(img['.key']).once('value').then((snap) => {
         this.currentImage = snap.val();
         this.startTime = new Date();
